@@ -71,5 +71,25 @@ final class NibHierarchyTests: XCTestCase {
             XCTFail("Expected to fail")
         }
     }
+    
+    func testFind() throws {
+        let targetID = UUID().uuidString
+        let grandChild = NibHierarchy(objectID: targetID, label: "", name: "", children: [])
+        let child1 = NibHierarchy(objectID: UUID().uuidString, label: "", name: "", children: [])
+        let child2 = NibHierarchy(objectID: UUID().uuidString, label: "", name: "", children: [grandChild])
+        let child3 = NibHierarchy(objectID: UUID().uuidString, label: "", name: "", children: [])
+        let parent = NibHierarchy(objectID: UUID().uuidString, label: "", name: "", children: [child1, child2, child3])
+        let actual = try XCTUnwrap(parent.find(targetID))
+        XCTAssertEqual(actual, grandChild)
+    }
+    
+    func testFind_missingObjectID() throws {
+        let grandChild = NibHierarchy(objectID: UUID().uuidString, label: "", name: "", children: [])
+        let child1 = NibHierarchy(objectID: UUID().uuidString, label: "", name: "", children: [])
+        let child2 = NibHierarchy(objectID: UUID().uuidString, label: "", name: "", children: [grandChild])
+        let child3 = NibHierarchy(objectID: UUID().uuidString, label: "", name: "", children: [])
+        let parent = NibHierarchy(objectID: UUID().uuidString, label: "", name: "", children: [child1, child2, child3])
+        XCTAssertNil(parent.find(UUID().uuidString))
+    }
 
 }

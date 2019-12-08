@@ -14,7 +14,7 @@ final class NibTests: XCTestCase {
         let childObject = NibObject(objectID: childView.objectID, classType: .view, content: [:])
         let topLevelView = NibHierarchy(objectID: UUID().uuidString, label: "Top Level View", name: "", children: [childView])
         let topLevelObject = NibObject(objectID: topLevelView.objectID, classType: .view, content: [:])
-        let objects = NibObjects(arrayLiteral: topLevelObject, childObject)
+        let objects = [topLevelObject.objectID: topLevelObject, childObject.objectID: childObject]
         let nib = Nib(hierarchy: topLevelView, objects: objects)
         let actual = try XCTUnwrap(nib.topLevelView)
         XCTAssertEqual(actual.objectID, topLevelObject.objectID)
@@ -25,9 +25,9 @@ final class NibTests: XCTestCase {
         let childObject = NibObject(objectID: childView.objectID, classType: .view, content: [:])
         let topLevelView = NibHierarchy(objectID: UUID().uuidString, label: "Top Level View", name: "", children: [childView])
         let topLevelObject = NibObject(objectID: topLevelView.objectID, classType: .view, content: [:])
-        let objects = NibObjects(arrayLiteral: topLevelObject, childObject)
+        let objects = [topLevelObject.objectID: topLevelObject, childObject.objectID: childObject]
         let nib = Nib(hierarchy: topLevelView, objects: objects)
-        let actual = nib.topLevelSubviews
+        let actual = nib.topLevelChildrenObjects()
         XCTAssertEqual(actual.count, 1)
         let actualFirst = try XCTUnwrap(actual.first)
         XCTAssertEqual(actualFirst.objectID, childObject.objectID)

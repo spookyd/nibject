@@ -9,7 +9,7 @@ import Foundation
 
 public struct SetupSubviewMethod: CustomStringConvertible {
     
-    public var subviews: [SubviewProperty]
+    public var subviews: [IBUIView]
     
     public var description: String {
         let addSubviews = subviews.map({ AddSubviewMethodCall(subview: $0) }).reduce("", { "\($0)\n\($1)" })
@@ -25,22 +25,18 @@ public struct SetupSubviewMethod: CustomStringConvertible {
 
 struct AddSubviewMethodCall: CustomStringConvertible {
     
-    var subview: SubviewProperty
+    var subview: IBUIView
     
     var description: String {
-        """
-        addSubview(\(subview.propertyName.lowerCamelCased))
-        """
+        subview.makeAddSubview(subview).output
     }
 }
 
 struct LayoutSubviewMethodCall: CustomStringConvertible {
     
-    var subview: SubviewProperty
+    var subview: IBUIView
     
     var description: String {
-        """
-        layout\(subview.propertyName.upperCamelCased)()
-        """
+        subview.makeLayoutSubView().output
     }
 }

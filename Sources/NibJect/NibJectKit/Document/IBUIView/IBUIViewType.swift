@@ -8,14 +8,20 @@
 import Foundation
 
 public enum IBUIViewType {
+    // Container Types
     case view
+    case stackView
+    // Content Types
+    case label
 }
 
 public extension IBUIViewType {
     
-    var uiViewClassString: String {
+    func interfaceBuilderView(with label: String) -> IBUIView {
         switch self {
-        case .view: return "UIView"
+        case .view: return IBUIView(label: label)
+        case .stackView: return IBUIStackView(label: label)
+        case .label: return IBUILabel(label: label)
         }
     }
     

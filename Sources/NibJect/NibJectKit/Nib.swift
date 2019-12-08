@@ -17,30 +17,38 @@ public enum NibError: Error {
 
 public struct Nib {
     public var hierarchy: NibHierarchy
-    public var objects: NibObjects
+    public var objects: [String: NibObject]
     
     public var topLevelView: NibObject? {
         let topObjectID = hierarchy.objectID
-        return objects.first(where: { $0.objectID == topObjectID })
+        return objects[topObjectID]
     }
     
-    public var topLevelSubviews: NibObjects {
-        let subviewObjectIDs = hierarchy.children.map({ $0.objectID })
-        let views = filteredObjects(by: .view)
-        return views.filter({ subviewObjectIDs.contains($0.objectID) })
+    public func topLevelChildrenObjects() -> NibObjects {
+        guard let topLevelView = topLevelView else { return [] }
+        return childrenObjects(of: topLevelView.objectID)
     }
     
-    public func filteredObjects(by type: NibObject.ClassType) -> NibObjects {
-        return objects.filter({ $0.classType == type })
+    public func childrenObjects(of objectID: String) -> NibObjects {
+        guard let parent = hierarchy.find(objectID) else {
+            return []
+        }
+        return parent.children.compactMap({ objects[$0.objectID] })
+    }
+    
+    public func name(of objectID: String) -> String {
+        guard let hierarchy = hierarchy.find(objectID) else {
+            return ""
+        }
+        return hierarchy.name
     }
     
     public func filteredHierarchy(by type: NibObject.ClassType) -> [NibHierarchy] {
         return hierarchy.children.filter({ child in
-            guard let object = self.objects.first(where: { $0.objectID == child.objectID }),
-                object.classType == .view  else {
+            guard let object = self.objects[child.objectID] else {
                 return false
             }
-            return true            
+            return object.classType == .view
         })
     }
     
@@ -55,10 +63,12 @@ public extension Nib {
         case .failure(let error):
             return .failure(.parsingReason(reason: .hierarchyParsingFailure(error: error)))
         }
-        let objects: NibObjects
+        var objects: [String: NibObject] = [:]
         switch NibObjects.from(plist) {
         case .success(let nibObjects):
-            objects = nibObjects
+            objects = nibObjects.reduce(into: objects, {
+                $0[$1.objectID] = $1
+            })
         case .failure(let error):
             return .failure(.parsingReason(reason: .objectsParsingFailure(error: error)))
         }

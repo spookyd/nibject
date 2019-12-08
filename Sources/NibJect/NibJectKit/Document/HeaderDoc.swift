@@ -16,7 +16,7 @@ public struct HeaderDoc: CustomStringConvertible {
         //  \(fileName).swift
         //
         //
-        //  Created using NibJect by Luke Davis
+        //  Created with ❤️ using NibJect by Luke Davis
         //
         """
     }

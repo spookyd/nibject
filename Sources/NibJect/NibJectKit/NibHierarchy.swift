@@ -31,6 +31,17 @@ extension NibHierarchy {
 }
 
 public extension NibHierarchy {
+    
+    func find(_ objectID: String) -> NibHierarchy? {
+        if self.objectID == objectID { return self }
+        for child in children {
+            if let found = child.find(objectID) {
+                return found
+            }
+        }
+        return .none
+    }
+    
     /// Only supports one view per nib
     static func from(_ plist: InterfaceBuilderPlist) -> Result<NibHierarchy, NibHierarchyError> {
         guard let hierarchy = plist.hierarchy as? [[AnyHashable: Any]] else {
