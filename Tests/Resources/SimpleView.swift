@@ -34,5 +34,12 @@ public class SimpleView: UIView {
         constraints.append(contentsOf: layoutChildView())
         NSLayoutConstraint.activate(constraints)
     }
+    
+    private func layoutChildView() -> [NSLayoutConstraint] {
+        let leading = childView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20)
+        return [
+            leading
+        ]
+    }
 
 }

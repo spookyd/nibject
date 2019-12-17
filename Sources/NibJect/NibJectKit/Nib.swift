@@ -16,18 +16,9 @@ public enum NibError: Error {
 }
 
 public struct Nib {
+    public typealias ObjectID = String
     public var hierarchy: NibHierarchy
-    public var objects: [String: NibObject]
-    
-    public var topLevelView: NibObject? {
-        let topObjectID = hierarchy.objectID
-        return objects[topObjectID]
-    }
-    
-    public func topLevelChildrenObjects() -> NibObjects {
-        guard let topLevelView = topLevelView else { return [] }
-        return childrenObjects(of: topLevelView.objectID)
-    }
+    public var objects: [ObjectID: NibObject]
     
     public func childrenObjects(of objectID: String) -> NibObjects {
         guard let parent = hierarchy.find(objectID) else {
@@ -36,7 +27,7 @@ public struct Nib {
         return parent.children.compactMap({ objects[$0.objectID] })
     }
     
-    public func name(of objectID: String) -> String {
+    public func name(of objectID: ObjectID) -> String {
         guard let hierarchy = hierarchy.find(objectID) else {
             return ""
         }
@@ -51,6 +42,7 @@ public struct Nib {
             return object.classType == .view
         })
     }
+
     
 }
 

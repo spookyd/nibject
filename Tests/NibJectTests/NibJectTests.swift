@@ -4,7 +4,7 @@ import XCTest
 
 final class NibJectTests: XCTestCase {
     func testOutputSwiftFile() throws {
-        let title = "ImportTestView"
+        let title = "SimpleView"
         let filePath = URL.resources.appendingPathComponent("\(title).xib").path
         let outputPath = Folder.temporary.path
         NibJect.ejectNib(at: filePath, to: outputPath)
@@ -26,16 +26,6 @@ final class NibJectTests: XCTestCase {
         XCTAssertEqual(content[4], expectedAccreditation)
     }
     
-    func testSimpleViewSwiftFileContent() throws {
-        let fileName = "SimpleView"
-        let filePath = URL.resources.appendingPathComponent("\(fileName).xib").path
-        let outputPath = Folder.temporary.path
-        let expected = try File(path: URL.resources.appendingPathComponent("\(fileName).swift").path).readAsString()
-        NibJect.ejectNib(at: filePath, to: outputPath)
-        let actual = try File(path: "\(outputPath)/\(fileName).swift").readAsString()
-        XCTAssertEqual(actual, expected)
-    }
-    
     func testNoSubviewsContent() throws {
         let fileName = "NoSubviewsView"
         let filePath = URL.resources.appendingPathComponent("\(fileName).xib").path
@@ -45,38 +35,86 @@ final class NibJectTests: XCTestCase {
         let actual = try File(path: "\(outputPath)/\(fileName).swift").readAsString()
         XCTAssertEqual(actual, expected)
     }
-//
-//    func testGeneratedSwiftContainsSubviews() throws {
-//        let fileName = "SimpleView"
-//        let filePath = URL.resources.appendingPathComponent("\(fileName).xib").path
-//        let outputPath = Folder.temporary.path
-//        NibJect.ejectNib(at: filePath, to: outputPath)
-//        let content = try File(path: "\(outputPath)/\(fileName).swift").readAsString()
-//        let expected = "// MARK: - Child Views"
-//        let subviewExpected = """
-//            private lazy var childView: UIView = {
-//        """
-//        XCTAssertTrue(content.contains(expected))
-//        XCTAssertTrue(content.contains(subviewExpected))
-//    }
-//
-//    func testGeneratedSwiftSetupSubviews() throws {
-//        let fileName = "SimpleView"
-//        let filePath = URL.resources.appendingPathComponent("\(fileName).xib").path
-//        let outputPath = Folder.temporary.path
-//        NibJect.ejectNib(at: filePath, to: outputPath)
-//        let content = try File(path: "\(outputPath)/\(fileName).swift").readAsString()
-//        let expected = """
-//            private func setupSubviews() {
-//                addSubview(childView)
-//
-//                var constraints: [NSLayoutConstraint] = []
-//
-//                constraints.append(contentsOf: layoutChildView())
-//                NSLayoutConstraint.activate(constraints)
-//            }
-//        """
-//        XCTAssertTrue(content.contains(expected))
-//    }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

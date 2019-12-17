@@ -10,7 +10,7 @@ import XCTest
 
 final class InterfaceBuilderPlistTests: XCTestCase {
     func testLoadsNibData() {
-        let filePath = URL.resources.appendingPathComponent("ImportTestView.xib").path
+        let filePath = URL.resources.appendingPathComponent("SimpleView.xib").path
         let actual = InterfaceBuilderPlist.from(filePath)
         switch actual {
         case .success(let plist):
