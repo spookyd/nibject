@@ -14,7 +14,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5Cu-ph-XBJ" userLabel="Child View">
-                    <rect key="frame" x="20" y="64" width="374" height="240"/>
+                    <rect key="frame" x="0.0" y="64" width="414" height="240"/>
                     <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="240" id="DKT-mu-zMq"/>
@@ -23,8 +23,8 @@
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
-                <constraint firstItem="5Cu-ph-XBJ" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="20" id="kI6-6h-KMN"/>
-                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="5Cu-ph-XBJ" secondAttribute="trailing" constant="20" id="op8-6h-0Jx"/>
+                <constraint firstItem="5Cu-ph-XBJ" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="kI6-6h-KMN"/>
+                <constraint firstAttribute="trailing" secondItem="5Cu-ph-XBJ" secondAttribute="trailing" id="op8-6h-0Jx"/>
                 <constraint firstItem="5Cu-ph-XBJ" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="20" id="ubc-uK-GPs"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>

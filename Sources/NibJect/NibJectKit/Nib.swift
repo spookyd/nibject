@@ -17,7 +17,7 @@ public enum NibError: Error {
 
 public struct Nib {
     public typealias ObjectID = String
-    public var hierarchy: NibHierarchy
+    public var hierarchy: [NibHierarchy]
     public var objects: [ObjectID: NibObject]
     
     public func childrenObjects(of objectID: String) -> NibObjects {
@@ -34,21 +34,21 @@ public struct Nib {
         return hierarchy.name
     }
     
-    public func filteredHierarchy(by type: NibObject.ClassType) -> [NibHierarchy] {
-        return hierarchy.children.filter({ child in
-            guard let object = self.objects[child.objectID] else {
-                return false
-            }
-            return object.classType == .view
-        })
-    }
+//    public func filteredHierarchy(by type: NibObject.ClassType) -> [NibHierarchy] {
+//        return hierarchy.children.filter({ child in
+//            guard let object = self.objects[child.objectID] else {
+//                return false
+//            }
+//            return object.classType == .view
+//        })
+//    }
 
     
 }
 
 public extension Nib {
     static func from(_ plist: InterfaceBuilderPlist) -> Result<Nib, NibError> {
-        let hierarchy: NibHierarchy
+        let hierarchy: [NibHierarchy]
         switch NibHierarchy.from(plist) {
         case .success(let nibHierarchy):
             hierarchy = nibHierarchy

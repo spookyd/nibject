@@ -10,15 +10,9 @@ import CodeWriter
 
 public class IBUIStackView: IBUIView {
     
-    public override var uikitRepresentation: String { "UIStackView" }
-    
-    public override init(label: String) {
-        super.init(label: label)
-    }
-    
-    override func makeAddSubview(_ subview: IBUIView) -> FunctionCall {
+    override func generateAddSubviews() -> FunctionCall {
         return FunctionCallBuilder(named: "addArrangedSubview")
-            .parameter(label: .none, name: subview.label.lowerCamelCased)
+            .parameter(label: .none, name: self.label.lowerCamelCased)
             .complete()
     }
     

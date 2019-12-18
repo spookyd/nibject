@@ -10,20 +10,10 @@ import CodeWriter
 
 public struct IBLayoutConstraint {
 
-    public enum Relation {
-        case lessThanOrEqualTo
-        case equalTo
-        case greaterThanOrEqualTo
-
-        public init?(_ rawValue: Int) {
-            switch rawValue {
-            case -1: self = .lessThanOrEqualTo
-            case 0: self = .equalTo
-            case 1: self = .greaterThanOrEqualTo
-            default:
-                return nil
-            }
-        }
+    public enum Relation: Int {
+        case lessThanOrEqualTo = -1
+        case equalTo = 0
+        case greaterThanOrEqualTo = 1
 
         func generateRelation() -> String {
             switch self {
@@ -112,49 +102,46 @@ public struct IBLayoutConstraint {
 
     }
 
-    public var firstItem: IBUIView
+    public var firstItemID: Nib.ObjectID
     public var firstAnchor: Anchor
-    public var secondItem: IBUIView?
+    public var secondItemID: Nib.ObjectID?
     public var secondAnchor: Anchor
     public var relation: Relation
     public var constant: Float
     public var priority: Int
     public var multiplier: Float
 
-
-    public func generateConstraint() -> String {
-        // Location Anchors
-        // constraint(equalTo anchor: NSLayoutAnchor<AnchorType>, constant c: CGFloat)
-        // Dimension Anchors
-        // constraint(lessThanOrEqualTo anchor: NSLayoutDimension, multiplier m: CGFloat, constant c: CGFloat)
-        var constraint = "\(firstItem).\(firstAnchor.generateAnchor()).constraint(\(relation.generateRelation())"
-        guard let secondItem = secondItem else {
-            constraint += "Constant: \(constant))"
-            return constraint
+    public typealias ViewLocator = (Nib.ObjectID, Nib.ObjectID?) -> ((IBUIView, IBUIView?))
+    public func makeLayoutConstraintFunctionCall(_ viewLocator: ViewLocator) -> FunctionCall {
+        let locatedViews = viewLocator(firstItemID, secondItemID)
+        let firstItem = locatedViews.0
+        var callee = ""
+        if firstItem.shouldUsePropertyName {
+            callee += "\(firstItem.propertyName)"
         }
-
-        constraint += ": \(secondItem).\(secondAnchor.generateAnchor())"
-
-        if firstAnchor.isLayoutDimension {
-            constraint += ", multiplier: \(multiplier)"
+        if !callee.isEmpty {
+            callee += "."
         }
-
-        if constant != 0.0 {
-            constraint += ", constant: \(constant)"
+        if firstItem.hasSafeArea {
+            callee += "safeAreaLayoutGuide."
         }
-
-        constraint += ")"
-
-        return constraint
-    }
-
-    public func makeLayoutConstraintFunctionCall() -> FunctionCall {
-        let callee = "\(firstItem).\(firstAnchor.generateAnchor())."
+        callee += "\(firstAnchor.generateAnchor())."
         var builder: FunctionCallComponentParameterizable = FunctionCallBuilder(named: "\(callee)constraint")
-        guard let secondItem = secondItem else {
+        guard let secondItem = locatedViews.1 else {
             return builder.parameter(label: "\(relation.generateRelation())Constant", name: "\(constant)").complete()
         }
-        builder = builder.parameter(label: relation.generateRelation(), name: "\(secondItem).\(secondAnchor.generateAnchor())")
+        var secondProperty = ""
+        if secondItem.shouldUsePropertyName {
+            secondProperty += "\(secondItem.propertyName)"
+        }
+        if !secondProperty.isEmpty {
+            secondProperty += "."
+        }
+        if secondItem.hasSafeArea {
+            secondProperty += "safeAreaGuide."
+        }
+        builder = builder.parameter(label: relation.generateRelation(),
+                                    name: "\(secondProperty)\(secondAnchor.generateAnchor())")
         if firstAnchor.isLayoutDimension {
             builder = builder.parameter(label: "multiplier", name: "\(multiplier)")
         }
@@ -165,15 +152,14 @@ public struct IBLayoutConstraint {
         return builder.complete()
     }
     
-    public static func make(for object: NibObject, with nib: Nib) -> IBLayoutConstraint {
-        return NibConstraintParser(object: object, nib: nib).parse()
+    public static func make(for object: NibObject) -> IBLayoutConstraint {
+        return NibConstraintParser(object: object).parse()
     }
 
 }
 
 struct NibConstraintParser {
     var object: NibObject
-    var nib: Nib
 
     func parse() -> IBLayoutConstraint {
         let firstItem = findFirstItem()
@@ -185,9 +171,9 @@ struct NibConstraintParser {
         let priority = findPriority()
         let multiplier = findMultiplier()
 
-        return IBLayoutConstraint(firstItem: firstItem,
+        return IBLayoutConstraint(firstItemID: firstItem,
                                   firstAnchor: firstAnchor,
-                                  secondItem: secondItem,
+                                  secondItemID: secondItem,
                                   secondAnchor: secondAnchor,
                                   relation: relation,
                                   constant: constant,
@@ -195,13 +181,12 @@ struct NibConstraintParser {
                                   multiplier: multiplier)
     }
 
-    private func findFirstItem() -> IBUIView {
+    private func findFirstItem() -> Nib.ObjectID {
         guard let firstItem = object.content["firstItem"] as? [AnyHashable: Any],
             let firstItemID = firstItem["ObjectID"] as? Nib.ObjectID else {
             fatalError("Could not find first item in \(object)")
         }
-        let label = nib.name(of: firstItemID)
-        return IBUIView(label: label)
+        return firstItemID
     }
 
     private func findFirstAnchor() -> IBLayoutConstraint.Anchor {
@@ -214,13 +199,12 @@ struct NibConstraintParser {
         return anchor
     }
 
-    private func findSecondItem() -> IBUIView? {
+    private func findSecondItem() -> Nib.ObjectID? {
         guard let secondItem = object.content["secondItem"] as? [AnyHashable: Any],
             let secondItemID = secondItem["ObjectID"] as? Nib.ObjectID else {
                 return .none
         }
-        let label = nib.name(of: secondItemID)
-        return IBUIView(label: label)
+        return secondItemID
     }
 
     private func findSecondAnchor() -> IBLayoutConstraint.Anchor {
@@ -237,7 +221,7 @@ struct NibConstraintParser {
         guard let relationRawValue = object.content["relation"] as? Int else {
             fatalError("Could not find relation in \(object)")
         }
-        guard let relation = IBLayoutConstraint.Relation(relationRawValue) else {
+        guard let relation = IBLayoutConstraint.Relation(rawValue: relationRawValue) else {
             fatalError("Invalid relation type \(relationRawValue)")
         }
         return relation

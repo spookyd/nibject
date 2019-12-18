@@ -21,8 +21,8 @@ final class NibHierarchyTests: XCTestCase {
         switch result {
         case .success(let actual):
             // Expected to ignore the first responder and file's owner types
-            XCTAssertNotEqual(actual.objectID, "-1")
-            XCTAssertNotEqual(actual.objectID, "-2")
+            XCTAssertNil(actual.find(NibHierarchy.firstResponderObjectID))
+            XCTAssertNil(actual.find(NibHierarchy.fileOwnerObjectID))
         default:
             XCTFail("Expected to be successful")
         }
@@ -45,7 +45,7 @@ final class NibHierarchyTests: XCTestCase {
         let result = NibHierarchy.from(plist)
         switch result {
         case .success(let actual):
-            let children = actual.children
+            let children = try XCTUnwrap(actual.first?.children)
             XCTAssertFalse(children.isEmpty)
             let grandChildren = try XCTUnwrap(children.first(where: { !$0.children.isEmpty })).children
             XCTAssertFalse(grandChildren.isEmpty)

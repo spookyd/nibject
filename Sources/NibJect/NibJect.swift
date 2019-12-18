@@ -5,8 +5,9 @@ public struct NibJect {
         do {
             let plist = try InterfaceBuilderPlist.from(inputPath).get()
             let nib = try Nib.from(plist).get()
+            let view = try IBUIView.from(nib: nib)
             let fileName = getOutputFileName(inputPath)
-            let swiftClass = try GeneratedSwiftFile.from(nib, named: fileName).get()
+            let swiftClass = try GeneratedSwiftFile.from(view, named: fileName).get()
             // Produce file text
             // Write file text
             swiftClass.writeToFile(at: outputPath)

@@ -43,15 +43,15 @@ public extension NibHierarchy {
     }
     
     /// Only supports one view per nib
-    static func from(_ plist: InterfaceBuilderPlist) -> Result<NibHierarchy, NibHierarchyError> {
+    static func from(_ plist: InterfaceBuilderPlist) -> Result<[NibHierarchy], NibHierarchyError> {
         guard let hierarchy = plist.hierarchy as? [[AnyHashable: Any]] else {
             fatalError("The ibTool formatting must have changed for `hierarchy`. Expected an array of dictionaries")
         }
-        let views = hierarchy.map({ parse($0) })
-        guard let firstView = views.first(where: {
+        let topLevelViews = hierarchy.map({ parse($0) }).filter({
             $0.objectID != self.fileOwnerObjectID && $0.objectID != self.firstResponderObjectID
-        }) else { return .failure(.viewNotFound) }
-        return .success(firstView)
+        })
+        if topLevelViews.isEmpty { return .failure(.viewNotFound) }
+        return .success(topLevelViews)
     }
     
     private static func parse(_ dictionary: [AnyHashable: Any]) -> NibHierarchy {
@@ -61,6 +61,15 @@ public extension NibHierarchy {
         let rawChildren = dictionary[CodingKeys.children.stringValue] as? [[AnyHashable: Any]] ?? []
         let children = rawChildren.map({ parse($0) })
         return NibHierarchy(objectID: objectID, label: label, name: name, children: children)
+    }
+}
+
+public extension Array where Element == NibHierarchy {
+    func find(_ objectID: Nib.ObjectID) -> NibHierarchy? {
+        for view in self {
+            if let found = view.find(objectID) { return found }
+        }
+        return .none
     }
 }
 

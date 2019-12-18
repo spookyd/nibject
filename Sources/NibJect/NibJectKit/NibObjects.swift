@@ -18,6 +18,7 @@ public typealias NibObjects = [NibObject]
 public struct NibObject {
     public var objectID: String
     public var classType: ClassType
+    var rawClassValue: String
     var content: [AnyHashable: Any]
 }
 
@@ -46,7 +47,10 @@ extension NibObject {
         } else if classTypeString.contains("IBUI") {
             classType = .view
         }
-        return .success(NibObject(objectID: objectID, classType: classType, content: dictionary))
+        return .success(NibObject(objectID: objectID,
+                                  classType: classType,
+                                  rawClassValue: classTypeString,
+                                  content: dictionary))
     }
 }
 
