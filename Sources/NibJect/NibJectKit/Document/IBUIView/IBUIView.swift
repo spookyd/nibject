@@ -32,12 +32,16 @@ public class IBUIView {
         return rawData.rawClassValue.replacingOccurrences(of: "IB", with: "")
     }
     
-    var propertyName: String {
+    var printableName: String {
         // Validate valid characters
         if name.isEmpty {
-            return label.lowerCamelCased
+            return label
         }
-        return name.lowerCamelCased
+        return name
+    }
+    
+    var propertyName: String {
+        return printableName.lowerCamelCased
     }
     
     var shouldUsePropertyName: Bool {
@@ -68,8 +72,6 @@ public class IBUIView {
         self.constraints.append(contentsOf: constraints)
     }
     
-    //////////////////////////////////////////////////////////////////////////////
-    
     public func generateLazyProperty() -> Property {
         let subclass = uikitRepresentation
         return Property(rawValue: """
@@ -81,14 +83,25 @@ public class IBUIView {
         """)
     }
     
-    func generateAddSubviews() -> FunctionCall {
+    func addSubviewCallBuilder() -> FunctionCallBuilder {
         return FunctionCallBuilder(named: "addSubview")
+    }
+    
+    func generateAddSubview() -> FunctionCall {
+        guard let parent = self.parent else {
+            return FunctionCall(rawValue: "")
+        }
+        let functionCall = addSubviewCallBuilder()
             .parameter(label: .none, name: propertyName)
             .complete()
+        if parent.isTopLevelView {
+            return functionCall
+        }
+        return FunctionCall(rawValue: "\(parent.propertyName).\(functionCall.output)")
     }
     
     func makeLayoutSubView() -> String {
-        return "layout\(label.upperCamelCased)"
+        return "layout\(printableName.upperCamelCased)"
     }
     
 }

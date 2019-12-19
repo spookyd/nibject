@@ -10,25 +10,25 @@ import UIKit
 public class DeepHierarchyView: UIView {
 
     // MARK: - Child Views
-    
+
     private lazy var subview1: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-    
+
     private lazy var subview2: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-    
+
     private lazy var subview3: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-    
+
     private lazy var subview4: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false

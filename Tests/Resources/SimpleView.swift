@@ -31,11 +31,11 @@ public class SimpleView: UIView {
     private func setupSubviews() {
         addSubview(childView)
         var constraints: [NSLayoutConstraint] = []
-        constraints.append(contentsOf: layoutView())
+        constraints.append(contentsOf: layoutChildView())
         NSLayoutConstraint.activate(constraints)
     }
 
-    private func layoutView() -> [NSLayoutConstraint] {
+    private func layoutChildView() -> [NSLayoutConstraint] {
         let top = childView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 20.0)
         let leading = childView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor)
         let trailing = safeAreaLayoutGuide.trailingAnchor.constraint(equalTo: childView.trailingAnchor)

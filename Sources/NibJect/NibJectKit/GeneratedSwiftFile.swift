@@ -79,18 +79,22 @@ public extension GeneratedSwiftFile {
 
 private extension TypeBodyComposable {
     func addViewProperties(for view: IBUIView) -> TypeBodyComposable {
-        return generateLazyProperties(for: view)
-    }
-    
-    
-    private func generateLazyProperties(for view: IBUIView) -> TypeBodyComposable {
+        let properties = generateLazyProperties(for: view)
         var writer: TypeBodyComposable = self
-        for child in view.subviews {
-            writer = writer.addProperty(child.generateLazyProperty())
-            if child.subviews.isEmpty { continue }
-            writer = generateLazyProperties(for: child)
+        for property in properties {
+            writer = writer.addProperty(property)
         }
         return writer
+    }
+    
+    private func generateLazyProperties(for view: IBUIView) -> [Property] {
+        var properties: [Property] = []
+        for child in view.subviews {
+            properties.append(child.generateLazyProperty())
+            if child.subviews.isEmpty { continue }
+            properties.append(contentsOf: generateLazyProperties(for: child))
+        }
+        return properties
     }
 
 }
@@ -101,29 +105,14 @@ private extension TypeBodyComposable {
     }
     
     private func generateSetupSubview(for view: IBUIView) -> TypeBodyComposable {
-        let signature = Function.createPrivate(named: "setupSubviews").complete()
-        var function: FunctionBodyComposable = FunctionBodyWriter(for: signature)
-        for child in view.subviews {
-            let property = child.propertyName
-            let subviewCall = FunctionCallBuilder(named: "addSubview").parameter(label: .none, name: property).complete()
-            function = function.add(subviewCall)
-        }
-        function = function.add(Property(rawValue: "var constraints: [NSLayoutConstraint] = []"))
-        for child in view.subviews {
-            let layoutName = child.makeLayoutSubView()
-            let layoutCall = FunctionCall(rawValue: "constraints.append(contentsOf: \(layoutName)())")
-            function = function.add(layoutCall)
-        }
-        let activation = FunctionCallBuilder(named: "NSLayoutConstraint.activate")
-            .parameter(label: .none, name: "constraints")
-            .complete()
-        function = function.add(activation)
-        return self.addFunctionBlock(function.complete())
+        let subviewBody = SetupSubviewsMethod(rootView: view).build()
+        return self.addFunctionBlock(subviewBody)
     }
     
     func addSubviewLayout(for view: IBUIView) -> TypeBodyComposable {
         var body: TypeBodyComposable = self
         for child in view.subviews {
+            if child.constraints.isEmpty { continue }
             body = body.addFunctionBlock(generateConstraints(for: child))
         }
         return body

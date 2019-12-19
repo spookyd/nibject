@@ -10,10 +10,8 @@ import CodeWriter
 
 public class IBUIStackView: IBUIView {
     
-    override func generateAddSubviews() -> FunctionCall {
+    override func addSubviewCallBuilder() -> FunctionCallBuilder {
         return FunctionCallBuilder(named: "addArrangedSubview")
-            .parameter(label: .none, name: self.label.lowerCamelCased)
-            .complete()
     }
     
 }

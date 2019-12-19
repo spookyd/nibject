@@ -28,12 +28,27 @@ final class NibJectTests: XCTestCase {
     
     func testNoSubviewsContent() throws {
         let fileName = "NoSubviewsView"
+        let expected = try loadExpectedOutput(fileName)
+        let actual = try runNibject(for: fileName)
+        XCTAssertEqual(actual, expected)
+    }
+    
+    func testDeepHierarchyView() throws {
+        let fileName = "DeepHierarchyView"
+        let expected = try loadExpectedOutput(fileName)
+        let actual = try runNibject(for: fileName)
+        XCTAssertEqual(actual, expected)
+    }
+    
+    private func loadExpectedOutput(_ fileName: String) throws -> String {
+        return try File(path: URL.resources.appendingPathComponent("\(fileName).swift").path).readAsString()
+    }
+    
+    private func runNibject(for fileName: String) throws -> String {
         let filePath = URL.resources.appendingPathComponent("\(fileName).xib").path
         let outputPath = Folder.temporary.path
-        let expected = try File(path: URL.resources.appendingPathComponent("\(fileName).swift").path).readAsString()
         NibJect.ejectNib(at: filePath, to: outputPath)
-        let actual = try File(path: "\(outputPath)/\(fileName).swift").readAsString()
-        XCTAssertEqual(actual, expected)
+        return try File(path: "\(outputPath)/\(fileName).swift").readAsString()
     }
 
 }
