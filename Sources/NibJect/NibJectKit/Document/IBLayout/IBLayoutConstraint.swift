@@ -71,7 +71,7 @@ public struct IBLayoutConstraint {
         case centerXMargin
         case centerYMargin
 
-        var isToMargin: Bool { self.rawValue >= 13 }
+        var isToMargin: Bool { self.rawValue >= Anchor.leftMargin.rawValue }
 
         var isLayoutDimension: Bool { self == .width || self == .height }
 
@@ -102,6 +102,7 @@ public struct IBLayoutConstraint {
 
     }
 
+    public var objectID: Nib.ObjectID
     public var firstItemID: Nib.ObjectID
     public var firstAnchor: Anchor
     public var secondItemID: Nib.ObjectID?
@@ -138,7 +139,7 @@ public struct IBLayoutConstraint {
             secondProperty += "."
         }
         if secondItem.hasSafeArea {
-            secondProperty += "safeAreaGuide."
+            secondProperty += "safeAreaLayoutGuide."
         }
         builder = builder.parameter(label: relation.generateRelation(),
                                     name: "\(secondProperty)\(secondAnchor.generateAnchor())")
@@ -162,6 +163,7 @@ struct NibConstraintParser {
     var object: NibObject
 
     func parse() -> IBLayoutConstraint {
+        let objectID = object.objectID
         let firstItem = findFirstItem()
         let firstAnchor = findFirstAnchor()
         let secondItem = findSecondItem()
@@ -171,7 +173,8 @@ struct NibConstraintParser {
         let priority = findPriority()
         let multiplier = findMultiplier()
 
-        return IBLayoutConstraint(firstItemID: firstItem,
+        return IBLayoutConstraint(objectID: objectID,
+                                  firstItemID: firstItem,
                                   firstAnchor: firstAnchor,
                                   secondItemID: secondItem,
                                   secondAnchor: secondAnchor,

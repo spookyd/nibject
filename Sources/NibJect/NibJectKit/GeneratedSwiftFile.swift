@@ -111,7 +111,7 @@ private extension TypeBodyComposable {
         function = function.add(Property(rawValue: "var constraints: [NSLayoutConstraint] = []"))
         for child in view.subviews {
             let layoutName = child.makeLayoutSubView()
-            let layoutCall = FunctionCall(rawValue: "constraints.append(contentsOf: \(layoutName))")
+            let layoutCall = FunctionCall(rawValue: "constraints.append(contentsOf: \(layoutName)())")
             function = function.add(layoutCall)
         }
         let activation = FunctionCallBuilder(named: "NSLayoutConstraint.activate")
@@ -134,8 +134,9 @@ private extension TypeBodyComposable {
             .returning(type: "[NSLayoutConstraint]")
             .complete()
         var functionBody: FunctionBodyComposable = FunctionBodyWriter(for: function)
-        for constraint in view.constraints {
-            let call = constraint.makeLayoutConstraintFunctionCall({ firstID, secondID in
+        var constraintNameAssignment: [String: Int] = [:]
+        for constraint in view.constraints.sorted(by: { $0.firstAnchor.rawValue < $1.firstAnchor.rawValue }) {
+            let call: FunctionCall = constraint.makeLayoutConstraintFunctionCall({ firstID, secondID in
                 guard let firstItem = view.findDistantRelative(for: firstID) else {
                     fatalError("Expected to have atleast first item")
                 }
@@ -145,11 +146,31 @@ private extension TypeBodyComposable {
                 }
                 return (firstItem, secondItem)
             })
-            functionBody = functionBody.add(call)
+            // Generate the property name
+            let propName = makePropertyName(for: constraint, assignedNames: &constraintNameAssignment)
+            functionBody = functionBody.add(call.assigningToProperty(named: propName, with: .immutable))
         }
+        let properties: [String] = constraintNameAssignment.map({
+            if $1 > 1 {
+                return "\($0)\($1)"
+            }
+            return $0
+        }).sorted(by: { $0 < $1 })
         return functionBody
-            .returning("[]")
+            .returning("[\n        \(properties.joined(separator: ",\n        "))\n    ]")
             .complete()
+    }
+    
+    private func makePropertyName(for constraint: IBLayoutConstraint, assignedNames: inout [String: Int]) -> String {
+        let name = constraint.firstAnchor.generateAnchor().replacingOccurrences(of: "Anchor", with: "")
+        if var count = assignedNames[name] {
+            count += 1
+            assignedNames[name] = count
+            return "\(name)\(count)"
+        } else {
+            assignedNames[name] = 1
+            return name
+        }
     }
     
 }

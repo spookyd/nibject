@@ -133,6 +133,7 @@ extension IBUIView {
             if object.classType == .layoutGuide {
                 let safeArea = IBLayoutGuide(objectID: object.objectID, name: child.name)
                 parent.layoutGuide = safeArea
+                // Do not add safe area as a child
                 continue
             }
             let constraints = self.findConstraints(for: child.objectID, &availableConstraints)

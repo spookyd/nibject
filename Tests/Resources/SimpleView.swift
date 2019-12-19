@@ -31,14 +31,20 @@ public class SimpleView: UIView {
     private func setupSubviews() {
         addSubview(childView)
         var constraints: [NSLayoutConstraint] = []
-        constraints.append(contentsOf: layoutChildView())
+        constraints.append(contentsOf: layoutView())
         NSLayoutConstraint.activate(constraints)
     }
-    
-    private func layoutChildView() -> [NSLayoutConstraint] {
-        let leading = childView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20)
+
+    private func layoutView() -> [NSLayoutConstraint] {
+        let top = childView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 20.0)
+        let leading = childView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor)
+        let trailing = safeAreaLayoutGuide.trailingAnchor.constraint(equalTo: childView.trailingAnchor)
+        let height = childView.heightAnchor.constraint(equalToConstant: 240.0)
         return [
-            leading
+            height,
+            leading,
+            top,
+            trailing
         ]
     }
 
