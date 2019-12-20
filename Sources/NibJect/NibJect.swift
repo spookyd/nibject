@@ -10,8 +10,11 @@ public struct NibJect {
             let swiftClass = try GeneratedSwiftFile.from(view, named: fileName).get()
             // Produce file text
             // Write file text
-            swiftClass.writeToFile(at: outputPath)
-            return .success(swiftClass)
+            let result = swiftClass.writeToFile(at: outputPath)
+            switch result {
+            case .success: return .success(swiftClass)
+            case .failure(let error): return .failure(error)
+            }
         } catch {
             return .failure(error)
         }

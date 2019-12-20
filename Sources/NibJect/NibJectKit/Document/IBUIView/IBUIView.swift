@@ -139,7 +139,8 @@ extension IBUIView {
                              with objectLookup: [Nib.ObjectID: NibObject],
                              and availableConstraints: inout [IBLayoutConstraint]) throws -> IBUIView {
         let parent = try self.from(hierarchy: hierarchy, objectLookup: objectLookup)
-        for child in hierarchy.children {
+        var subviewsToAdd: [IBUIView] = []
+        for child in hierarchy.children.reversed() {
             guard let object = objectLookup[child.objectID] else {
                 continue
             }
@@ -157,7 +158,10 @@ extension IBUIView {
                 childView = try self.from(hierarchy: child, with: objectLookup, and: &availableConstraints)
             }
             childView.addConstraints(constraints)
-            parent.addSubview(childView)
+            subviewsToAdd.append(childView)
+        }
+        for child in subviewsToAdd.reversed() {
+            parent.addSubview(child)
         }
         return parent
     }

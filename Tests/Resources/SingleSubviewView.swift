@@ -1,5 +1,5 @@
 //
-//  SimpleView.swift
+//  SingleSubviewView.swift
 //
 //
 //  Created with ❤️ using NibJect by Luke Davis
@@ -7,7 +7,7 @@
 
 import UIKit
 
-public class SimpleView: UIView {
+public class SingleSubviewView: UIView {
 
     // MARK: - Child Views
 

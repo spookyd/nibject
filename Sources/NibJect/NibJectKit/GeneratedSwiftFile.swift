@@ -132,6 +132,7 @@ private extension TypeBodyComposable {
         for constraint in view.constraints.sorted(by: { $0.firstAnchor.rawValue < $1.firstAnchor.rawValue }) {
             let call: FunctionCall = try constraint.makeLayoutConstraintFunctionCall({ firstID, secondID in
                 guard let firstItem = view.findDistantRelative(for: firstID) else {
+                    fatalError("Missing firstItemID: \(firstID)")
                     throw GeneratedSwiftFileError.missingConstraintItem(missingObjectID: firstID)
                 }
                 var secondItem: IBUIView? = .none

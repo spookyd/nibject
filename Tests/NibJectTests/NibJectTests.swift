@@ -4,7 +4,7 @@ import XCTest
 
 final class NibJectTests: XCTestCase {
     func testOutputSwiftFile() throws {
-        let title = "SimpleView"
+        let title = "SingleSubviewView"
         let filePath = URL.resources.appendingPathComponent("\(title).xib").path
         let outputPath = Folder.temporary.path
         NibJect.ejectNib(at: filePath, to: outputPath)
@@ -13,7 +13,7 @@ final class NibJectTests: XCTestCase {
     }
     
     func testGeneratedSwiftFileHasHeaderDoc() throws {
-        let fileName = "SimpleView"
+        let fileName = "SingleSubviewView"
         let filePath = URL.resources.appendingPathComponent("\(fileName).xib").path
         let outputPath = Folder.temporary.path
         NibJect.ejectNib(at: filePath, to: outputPath)
@@ -34,7 +34,14 @@ final class NibJectTests: XCTestCase {
     }
     
     func testGeneratedSwiftContainsSubviews() throws {
-        let fileName = "SimpleView"
+        let fileName = "SingleSubviewView"
+        let expected = try loadExpectedOutput(fileName)
+        let actual = try runNibject(for: fileName)
+        XCTAssertEqual(actual, expected)
+    }
+    
+    func testSiblingSubviews() throws {
+        let fileName = "SiblingSubviewsView"
         let expected = try loadExpectedOutput(fileName)
         let actual = try runNibject(for: fileName)
         XCTAssertEqual(actual, expected)
@@ -46,6 +53,14 @@ final class NibJectTests: XCTestCase {
         let actual = try runNibject(for: fileName)
         XCTAssertEqual(actual, expected)
     }
+    /*
+    func testComplexView() throws {
+        let fileName = "ComplexView"
+        let expected = try loadExpectedOutput(fileName)
+        let actual = try runNibject(for: fileName)
+        XCTAssertEqual(actual, expected)
+    }
+ */
     
     private func loadExpectedOutput(_ fileName: String) throws -> String {
         return try File(path: URL.resources.appendingPathComponent("\(fileName).swift").path).readAsString()
@@ -54,7 +69,7 @@ final class NibJectTests: XCTestCase {
     private func runNibject(for fileName: String) throws -> String {
         let filePath = URL.resources.appendingPathComponent("\(fileName).xib").path
         let outputPath = Folder.temporary.path
-        NibJect.ejectNib(at: filePath, to: outputPath)
+        _ = try NibJect.ejectNib(at: filePath, to: outputPath).get()
         return try File(path: "\(outputPath)/\(fileName).swift").readAsString()
     }
 
