@@ -33,6 +33,13 @@ final class NibJectTests: XCTestCase {
         XCTAssertEqual(actual, expected)
     }
     
+    func testGeneratedSwiftContainsSubviews() throws {
+        let fileName = "SimpleView"
+        let expected = try loadExpectedOutput(fileName)
+        let actual = try runNibject(for: fileName)
+        XCTAssertEqual(actual, expected)
+    }
+    
     func testDeepHierarchyView() throws {
         let fileName = "DeepHierarchyView"
         let expected = try loadExpectedOutput(fileName)

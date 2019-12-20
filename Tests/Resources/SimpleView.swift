@@ -21,7 +21,7 @@ public class SimpleView: UIView {
         super.init(frame: .zero)
         setupSubviews()
     }
-    
+
     public required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

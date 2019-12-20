@@ -33,15 +33,6 @@ public struct Nib {
         }
         return hierarchy.name
     }
-    
-//    public func filteredHierarchy(by type: NibObject.ClassType) -> [NibHierarchy] {
-//        return hierarchy.children.filter({ child in
-//            guard let object = self.objects[child.objectID] else {
-//                return false
-//            }
-//            return object.classType == .view
-//        })
-//    }
 
     
 }

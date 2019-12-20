@@ -112,9 +112,9 @@ public struct IBLayoutConstraint {
     public var priority: Int
     public var multiplier: Float
 
-    public typealias ViewLocator = (Nib.ObjectID, Nib.ObjectID?) -> ((IBUIView, IBUIView?))
-    public func makeLayoutConstraintFunctionCall(_ viewLocator: ViewLocator) -> FunctionCall {
-        let locatedViews = viewLocator(firstItemID, secondItemID)
+    public typealias ViewLocator = (Nib.ObjectID, Nib.ObjectID?) throws -> ((IBUIView, IBUIView?))
+    public func makeLayoutConstraintFunctionCall(_ viewLocator: ViewLocator) rethrows -> FunctionCall {
+        let locatedViews = try viewLocator(firstItemID, secondItemID)
         let firstItem = locatedViews.0
         var callee = ""
         if firstItem.shouldUsePropertyName {

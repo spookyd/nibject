@@ -9,6 +9,10 @@ import Foundation
 import CodeWriter
 import Files
 
+public enum GeneratedSwiftFileError: Error {
+    case missingConstraintItem(missingObjectID: Nib.ObjectID)
+}
+
 public struct GeneratedSwiftFile {
 
     var view: IBUIView
@@ -23,7 +27,7 @@ public extension GeneratedSwiftFile {
         do {
             let outputFolder = try Folder(path: path)
             let outputFile = try outputFolder.createFile(named: "\(fileName).swift")
-            let content = generateContent()
+            let content = try generateContent()
             try outputFile.write(content)
             return .success(outputFile)
         } catch {
@@ -38,9 +42,9 @@ public extension GeneratedSwiftFile {
                                     .publicAccess)
     }
     
-    private func generateContent() -> String {
+    private func generateContent() throws -> String {
         // Run through processors
-        let typeWriter = generateClassWriter()
+        let typeWriter = try generateClassWriter()
             .addMark("Child Views")
             .addViewProperties(for: view)
             .addFunctionBlock(FunctionBody(output: """
@@ -48,7 +52,8 @@ public extension GeneratedSwiftFile {
                 super.init(frame: .zero)
                 setupSubviews()
             }
-
+            """))
+            .addFunctionBlock(FunctionBody(output: """
             public required init?(coder: NSCoder) {
                 fatalError("init(coder:) has not been implemented")
             }
@@ -109,25 +114,25 @@ private extension TypeBodyComposable {
         return self.addFunctionBlock(subviewBody)
     }
     
-    func addSubviewLayout(for view: IBUIView) -> TypeBodyComposable {
+    func addSubviewLayout(for view: IBUIView) throws -> TypeBodyComposable {
         var body: TypeBodyComposable = self
         for child in view.subviews {
             if child.constraints.isEmpty { continue }
-            body = body.addFunctionBlock(generateConstraints(for: child))
+            body = body.addFunctionBlock(try generateConstraints(for: child))
         }
         return body
     }
     
-    private func generateConstraints(for view: IBUIView) -> FunctionBody {
+    private func generateConstraints(for view: IBUIView) throws -> FunctionBody {
         let function = Function.createPrivate(named: view.makeLayoutSubView())
             .returning(type: "[NSLayoutConstraint]")
             .complete()
         var functionBody: FunctionBodyComposable = FunctionBodyWriter(for: function)
         var constraintNameAssignment: [String: Int] = [:]
         for constraint in view.constraints.sorted(by: { $0.firstAnchor.rawValue < $1.firstAnchor.rawValue }) {
-            let call: FunctionCall = constraint.makeLayoutConstraintFunctionCall({ firstID, secondID in
+            let call: FunctionCall = try constraint.makeLayoutConstraintFunctionCall({ firstID, secondID in
                 guard let firstItem = view.findDistantRelative(for: firstID) else {
-                    fatalError("Expected to have atleast first item")
+                    throw GeneratedSwiftFileError.missingConstraintItem(missingObjectID: firstID)
                 }
                 var secondItem: IBUIView? = .none
                 if let secondID = secondID {
@@ -163,87 +168,3 @@ private extension TypeBodyComposable {
     }
     
 }
-
-class LayoutFunctionGenerator {
-//
-//    var nib: Nib
-//    var constraints: [Nib.ObjectID: NibObject] = [:]
-//    init(nib: Nib) {
-//        self.nib = nib
-//        func childrenConstraints(for hierarchy: NibHierarchy) -> [NibObject] {
-//            guard let object = nib.objects[hierarchy.objectID] else { return [] }
-//            if object.classType == .layoutConstraint { return [object] }
-//            var objects: [NibObject] = []
-//            for child in hierarchy.children {
-//                objects.append(contentsOf: childrenConstraints(for: child))
-//            }
-//            return objects
-//        }
-//        for constraint in childrenConstraints(for: nib.hierarchy) {
-//            constraints[constraint.objectID] = constraint
-//        }
-//    }
-    
-//    func generateLayoutFunctions() -> [FunctionBody] {
-//        // Loop all top level first
-//        // Make constraints
-//        return []
-//    }
-    
-//    private func generateConstraints(for hierarchy: NibHierarchy) -> FunctionBody {
-//        let function = Function.createPrivate(named: generateLayoutSubviewMethod(hierarchy))
-//            .returning(type: "[NSLayoutConstraint]")
-//            .complete()
-//        var functionBody: FunctionBodyComposable = FunctionBodyWriter(for: function)
-//        let associatedConstraints = findConstraints(for: hierarchy.objectID)
-//        for constraintObject in hierarchy.children {
-//            let constraint = IBLayoutConstraint.make(for: object, with: nib)
-//            let name = constraint.firstAnchor.generateAnchor()
-//            let functionCall = constraint.makeLayoutConstraintFunctionCall()
-//            functionBody = functionBody.add(functionCall)
-//        }
-//        return functionBody
-//            .returning("[]")
-//            .complete()
-//    }
-    
-//    private func generateLayoutSubviewMethod(_ hierarchy: NibHierarchy) -> String {
-//        // Validate valid characters
-//        let name: String
-//        if hierarchy.name.isEmpty {
-//            name = hierarchy.label.upperCamelCased
-//        } else {
-//            name = hierarchy.name.upperCamelCased
-//        }
-//        return "layout\(name)()"
-//    }
-    
-}
-//
-////class DocumentBuilder {
-////    let nib: Nib
-////    init(nib: Nib) {
-////        self.nib = nib
-////    }
-////
-////    func generateSubclasses() -> [String] {
-////        var subclasses: [String] = []
-////        for hierarchy in nib.hierarchy {
-////            let subclassed = generateSubclasses(for: hierarchy)
-////            subclasses.append(contentsOf: subclassed)
-////        }
-////        return subclasses
-////    }
-////
-////    func generateSubclasses(for hierarchy: NibHierarchy) -> [String] {
-////        let parent = hierarchy.label
-////        var subclasses: [String] = []
-////        for child in hierarchy.children {
-////            subclasses.append("\(parent) -> \(child.label)")
-////            if child.children.isEmpty { continue }
-////            subclasses.append(contentsOf: generateSubclasses(for: child))
-////        }
-////        return subclasses
-////    }
-////
-////}
