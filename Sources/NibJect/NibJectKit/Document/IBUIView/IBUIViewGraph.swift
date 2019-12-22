@@ -14,6 +14,26 @@ class IBUIViewGraph {
         self.view = view
     }
     
+    func toArray() -> [[IBUIView]] {
+        var array: [[IBUIView]] = [[view]]
+        flattenChildren(of: view, into: &array)
+        return array
+    }
+      
+    private func flattenChildren(of node: IBUIView, into array: inout [[IBUIView]]) {
+        array.append(node.subviews)
+        for child in node.subviews {
+            if child.subviews.isEmpty { continue }
+            flattenChildren(of: child, into: &array)
+        }
+    }
+    
+    func flattenHierarchy() -> [IBUIView] {
+        return toArray().flatMap({ $0 })
+    }
+    
+    //
+    
     public func findDistantRelative(for objectID: Nib.ObjectID) -> IBUIView? {
         return searchRelatives(for: objectID, startingAt: self.view)
     }

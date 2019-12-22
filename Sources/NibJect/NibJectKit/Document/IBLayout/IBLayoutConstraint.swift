@@ -153,6 +153,12 @@ public struct IBLayoutConstraint {
         return builder.complete()
     }
     
+    public static func from(nib: Nib) -> [IBLayoutConstraint] {
+        return nib.objects
+            .filter({ $0.value.classType == .layoutConstraint })
+            .map({ IBLayoutConstraint.make(for: $0.value) })
+    }
+    
     public static func make(for object: NibObject) -> IBLayoutConstraint {
         return NibConstraintParser(object: object).parse()
     }

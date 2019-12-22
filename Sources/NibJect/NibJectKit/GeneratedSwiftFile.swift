@@ -43,6 +43,7 @@ public extension GeneratedSwiftFile {
     }
     
     private func generateContent() throws -> String {
+        let viewGraph = IBUIViewGraph(view: view)
         // Run through processors
         let typeWriter = try generateClassWriter()
             .addMark("Child Views")
@@ -60,7 +61,7 @@ public extension GeneratedSwiftFile {
             """))
             .addMark("Layout")
             .addSetupSubview(for: view)
-            .addSubviewLayout(for: view)
+            .addSubviewLayout(for: viewGraph)
             .complete()
             
         return """
@@ -114,9 +115,9 @@ private extension TypeBodyComposable {
         return self.addFunctionBlock(subviewBody)
     }
     
-    func addSubviewLayout(for view: IBUIView) throws -> TypeBodyComposable {
+    func addSubviewLayout(for viewGraph: IBUIViewGraph) throws -> TypeBodyComposable {
         var body: TypeBodyComposable = self
-        for child in view.subviews {
+        for child in viewGraph.flattenHierarchy() {
             if child.constraints.isEmpty { continue }
             body = body.addFunctionBlock(try generateConstraints(for: child))
         }
@@ -132,7 +133,6 @@ private extension TypeBodyComposable {
         for constraint in view.constraints.sorted(by: { $0.firstAnchor.rawValue < $1.firstAnchor.rawValue }) {
             let call: FunctionCall = try constraint.makeLayoutConstraintFunctionCall({ firstID, secondID in
                 guard let firstItem = view.findDistantRelative(for: firstID) else {
-                    fatalError("Missing firstItemID: \(firstID)")
                     throw GeneratedSwiftFileError.missingConstraintItem(missingObjectID: firstID)
                 }
                 var secondItem: IBUIView? = .none
@@ -157,7 +157,7 @@ private extension TypeBodyComposable {
     }
     
     private func makePropertyName(for constraint: IBLayoutConstraint, assignedNames: inout [String: Int]) -> String {
-        let name = constraint.firstAnchor.generateAnchor().replacingOccurrences(of: "Anchor", with: "")
+        let name = constraint.firstAnchor.generateAnchor().replacingOccurrences(of: "Anchor", with: "").replacingOccurrences(of: ".", with: "")
         if var count = assignedNames[name] {
             count += 1
             assignedNames[name] = count

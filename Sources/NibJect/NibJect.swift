@@ -6,10 +6,11 @@ public struct NibJect {
             let plist = try InterfaceBuilderPlist.from(inputPath).get()
             let nib = try Nib.from(plist).get()
             let view = try IBUIView.from(nib: nib)
+            let constraints = IBLayoutConstraint.from(nib: nib)
+            let viewGraph = IBUIViewGraph(view: view).flattenHierarchy()
+            ConstraintBuilder(flattendView: viewGraph).assign(constraints: constraints)
             let fileName = getOutputFileName(inputPath)
             let swiftClass = try GeneratedSwiftFile.from(view, named: fileName).get()
-            // Produce file text
-            // Write file text
             let result = swiftClass.writeToFile(at: outputPath)
             switch result {
             case .success: return .success(swiftClass)

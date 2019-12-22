@@ -53,14 +53,13 @@ final class NibJectTests: XCTestCase {
         let actual = try runNibject(for: fileName)
         XCTAssertEqual(actual, expected)
     }
-    /*
+
     func testComplexView() throws {
         let fileName = "ComplexView"
         let expected = try loadExpectedOutput(fileName)
         let actual = try runNibject(for: fileName)
         XCTAssertEqual(actual, expected)
     }
- */
     
     private func loadExpectedOutput(_ fileName: String) throws -> String {
         return try File(path: URL.resources.appendingPathComponent("\(fileName).swift").path).readAsString()

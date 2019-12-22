@@ -15,7 +15,7 @@ public enum IBUIViewError: Error {
 
 public typealias CodeBlock = String
 
-public class IBUIView {
+public class IBUIView: CustomStringConvertible {
     
     public let objectID: Nib.ObjectID
     public let label: String
@@ -104,6 +104,23 @@ public class IBUIView {
         return "layout\(printableName.upperCamelCased)"
     }
     
+    public var description: String {
+        if constraints.isEmpty {
+            return "View(\(objectID))"
+        }
+        return "View(\(objectID)): Comnstraints -> \(constraints)"
+    }
+    
+    func printGraph() {
+        let graph = IBUIViewGraph(view: self).toArray()
+        for (idx, level) in graph.enumerated() {
+            print("Level \(idx + 1)")
+            for view in level {
+                print(view)
+            }
+        }
+    }
+    
 }
 
 // MARK: - Search
@@ -150,14 +167,22 @@ extension IBUIView {
                 // Do not add safe area as a child
                 continue
             }
-            let constraints = self.findConstraints(for: child.objectID, &availableConstraints)
             let childView: IBUIView
             if child.children.isEmpty {
                 childView = try self.from(hierarchy: child, objectLookup: objectLookup)
             } else {
+                // Luke, you need to traverse down the view graph before add constraints.
+                // Adding suvies and constraints might need to be separate operations
+                /*
+                 if view has subviews
+                    unitl view has no subviews
+                 Add constraints for view
+                    
+                 */
                 childView = try self.from(hierarchy: child, with: objectLookup, and: &availableConstraints)
+//                let constraints = self.findConstraints(for: child.objectID, &availableConstraints)
+//                childView.addConstraints(constraints)
             }
-            childView.addConstraints(constraints)
             subviewsToAdd.append(childView)
         }
         for child in subviewsToAdd.reversed() {
@@ -172,6 +197,7 @@ extension IBUIView {
         }
         switch object.rawClassValue {
         case "IBUIStackView": return IBUIStackView(label: hierarchy.label, name: hierarchy.name, nibObject: object)
+        case "IBUIButton": return IBUIButton(label: hierarchy.label, name: hierarchy.name, nibObject: object)
         default: return IBUIView(label: hierarchy.label, name: hierarchy.name, nibObject: object)
         }
     }
@@ -197,4 +223,26 @@ extension IBUIView {
     
 }
 
+class ConstraintBuilder {
+    let flattendView: [IBUIView]
+    
+    init(flattendView: [IBUIView]) {
+        self.flattendView = flattendView
+    }
+    
+    func assign(constraints: [IBLayoutConstraint]) {
+        var usedConstraints: [Nib.ObjectID] = []
+        for view in flattendView.reversed() {
+            if usedConstraints.count == constraints.count { return }
+            let matchedConstraints = constraints.filter({
+                !usedConstraints.contains($0.objectID)
+                    && ($0.firstItemID == view.objectID || $0.secondItemID == view.objectID)
+            })
+            if matchedConstraints.isEmpty { continue }
+            view.addConstraints(matchedConstraints)
+            usedConstraints.append(contentsOf: matchedConstraints.map({ $0.objectID }))
+        }
+    }
+    
+}
 
