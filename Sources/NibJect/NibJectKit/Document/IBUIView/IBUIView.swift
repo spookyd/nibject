@@ -130,13 +130,6 @@ extension IBUIView {
         return IBUIViewGraph(view: self).findDistantRelative(for: objectID)
     }
     
-    /// Searches down the view graph for a descendent matching the object id.
-    /// Uses DFS for discovery.
-    /// - Parameter objectID: The object id of the view to find
-    public func findView(with objectID: Nib.ObjectID) -> IBUIView? {
-        return IBUIViewGraph(view: self).findView(with: objectID)
-    }
-    
 }
 
 // MARK: - Builder
@@ -146,18 +139,12 @@ extension IBUIView {
         // For now only support single view
         guard let hierarchy = nib.hierarchy.first else { throw IBUIViewError.noTopLevelViewInHierarchy(nib.hierarchy) }
         let viewObjects = nib.objects.filter({ $0.value.classType == .view || $0.value.classType == .layoutGuide })
-        var constraintObjects = nib.objects
-            .filter({ $0.value.classType == .layoutConstraint })
-            .map({ IBLayoutConstraint.make(for: $0.value) })
-        return try self.from(hierarchy: hierarchy, with: viewObjects, and: &constraintObjects)
+        return try self.from(hierarchy: hierarchy, with: viewObjects)
     }
     
-    private static func from(hierarchy: NibHierarchy,
-                             with objectLookup: [Nib.ObjectID: NibObject],
-                             and availableConstraints: inout [IBLayoutConstraint]) throws -> IBUIView {
+    private static func from(hierarchy: NibHierarchy, with objectLookup: [Nib.ObjectID: NibObject]) throws -> IBUIView {
         let parent = try self.from(hierarchy: hierarchy, objectLookup: objectLookup)
-        var subviewsToAdd: [IBUIView] = []
-        for child in hierarchy.children.reversed() {
+        for child in hierarchy.children {
             guard let object = objectLookup[child.objectID] else {
                 continue
             }
@@ -171,22 +158,9 @@ extension IBUIView {
             if child.children.isEmpty {
                 childView = try self.from(hierarchy: child, objectLookup: objectLookup)
             } else {
-                // Luke, you need to traverse down the view graph before add constraints.
-                // Adding suvies and constraints might need to be separate operations
-                /*
-                 if view has subviews
-                    unitl view has no subviews
-                 Add constraints for view
-                    
-                 */
-                childView = try self.from(hierarchy: child, with: objectLookup, and: &availableConstraints)
-//                let constraints = self.findConstraints(for: child.objectID, &availableConstraints)
-//                childView.addConstraints(constraints)
+                childView = try self.from(hierarchy: child, with: objectLookup)
             }
-            subviewsToAdd.append(childView)
-        }
-        for child in subviewsToAdd.reversed() {
-            parent.addSubview(child)
+            parent.addSubview(childView)
         }
         return parent
     }
@@ -200,25 +174,6 @@ extension IBUIView {
         case "IBUIButton": return IBUIButton(label: hierarchy.label, name: hierarchy.name, nibObject: object)
         default: return IBUIView(label: hierarchy.label, name: hierarchy.name, nibObject: object)
         }
-    }
-    
-    private static func findConstraints(for objectID: Nib.ObjectID,
-                                        _ availableConstraints: inout [IBLayoutConstraint]) -> [IBLayoutConstraint] {
-        var constraintsToRemove: [Int] = []
-        var constraints: [IBLayoutConstraint] = []
-        for (idx, constraint) in availableConstraints.enumerated() {
-            if constraint.firstItemID == objectID {
-                constraintsToRemove.append(idx)
-                constraints.append(constraint)
-            } else if let secondItem = constraint.secondItemID, secondItem == objectID {
-                constraintsToRemove.append(idx)
-                constraints.append(constraint)
-            }
-        }
-        for removeIdx in constraintsToRemove.reversed() {
-            availableConstraints.remove(at: removeIdx)
-        }
-        return constraints
     }
     
 }

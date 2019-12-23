@@ -7,16 +7,16 @@
 
 import Foundation
 
-extension String {
+extension StringProtocol {
     
     func capitalizingFirstLetter() -> String {
         return prefix(1).uppercased() + dropFirst()
     }
 
     var upperCamelCased: String {
-        return self.lowercased()
+        return self
             .split(separator: " ")
-            .map { return $0.lowercased().capitalizingFirstLetter() }
+            .map { return $0.capitalizingFirstLetter() }
             .joined()
     }
     

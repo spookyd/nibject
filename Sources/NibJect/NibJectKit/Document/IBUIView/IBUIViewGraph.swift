@@ -32,8 +32,6 @@ class IBUIViewGraph {
         return toArray().flatMap({ $0 })
     }
     
-    //
-    
     public func findDistantRelative(for objectID: Nib.ObjectID) -> IBUIView? {
         return searchRelatives(for: objectID, startingAt: self.view)
     }
@@ -59,13 +57,6 @@ class IBUIViewGraph {
         // Work around for safe area
         if parent.hasSafeArea && parent.layoutGuide?.objectID == objectID { return parent }
         return searchRelatives(for: objectID, startingID: startingID, in: parent)
-    }
-    
-    /// Searches down the view graph for a descendent matching the object id.
-    /// Uses DFS for discovery.
-    /// - Parameter objectID: The object id of the view to find
-    public func findView(with objectID: Nib.ObjectID) -> IBUIView? {
-        return findView(with: objectID, in: self.view)
     }
     
     private func findView(with objectID: Nib.ObjectID, in node: IBUIView) -> IBUIView? {

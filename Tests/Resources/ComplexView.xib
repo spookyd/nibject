@@ -26,14 +26,14 @@
                             <rect key="frame" x="16" y="37" width="342" height="30"/>
                             <state key="normal" title="Button"/>
                         </button>
-                        <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="pHc-bn-Csq" userLabel="segmentControl">
+                        <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="pHc-bn-Csq" userLabel="segment control">
                             <rect key="frame" x="121.5" y="75" width="131" height="32"/>
                             <segments>
                                 <segment title="First"/>
                                 <segment title="Second"/>
                             </segments>
                         </segmentedControl>
-                        <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="AeB-De-iRa" userLabel="textField">
+                        <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="AeB-De-iRa" userLabel="text field">
                             <rect key="frame" x="87" y="114" width="200" height="34"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="200" id="poM-jk-SDu"/>

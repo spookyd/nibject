@@ -11,31 +11,31 @@ public class ComplexView: UIView {
 
     // MARK: - Child Views
 
-    private lazy var childview: UIView = {
+    private lazy var childView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
 
-    private lazy var toplabel: UILabel = {
+    private lazy var topLabel: UILabel = {
         let view = UILabel()
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
 
-    private lazy var ctabutton: UIButton = {
+    private lazy var ctaButton: UIButton = {
         let view = UIButton()
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
 
-    private lazy var segmentcontrol: UISegmentedControl = {
+    private lazy var segmentControl: UISegmentedControl = {
         let view = UISegmentedControl()
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
 
-    private lazy var textfield: UITextField = {
+    private lazy var textField: UITextField = {
         let view = UITextField()
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
@@ -53,24 +53,24 @@ public class ComplexView: UIView {
     // MARK: - Layout
 
     private func setupSubviews() {
-        addSubview(childview)
-        childview.addSubview(toplabel)
-        childview.addSubview(ctabutton)
-        childview.addSubview(segmentcontrol)
-        childview.addSubview(textfield)
+        addSubview(childView)
+        childView.addSubview(topLabel)
+        childView.addSubview(ctaButton)
+        childView.addSubview(segmentControl)
+        childView.addSubview(textField)
         var constraints: [NSLayoutConstraint] = []
-        constraints.append(contentsOf: layoutChildview())
-        constraints.append(contentsOf: layoutToplabel())
-        constraints.append(contentsOf: layoutCtabutton())
-        constraints.append(contentsOf: layoutSegmentcontrol())
-        constraints.append(contentsOf: layoutTextfield())
+        constraints.append(contentsOf: layoutChildView())
+        constraints.append(contentsOf: layoutTopLabel())
+        constraints.append(contentsOf: layoutCtaButton())
+        constraints.append(contentsOf: layoutSegmentControl())
+        constraints.append(contentsOf: layoutTextField())
         NSLayoutConstraint.activate(constraints)
     }
 
-    private func layoutChildview() -> [NSLayoutConstraint] {
-        let top = childview.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor)
-        let leading = childview.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 20.0)
-        let trailing = safeAreaLayoutGuide.trailingAnchor.constraint(equalTo: childview.trailingAnchor, constant: 20.0)
+    private func layoutChildView() -> [NSLayoutConstraint] {
+        let top = childView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor)
+        let leading = childView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 20.0)
+        let trailing = safeAreaLayoutGuide.trailingAnchor.constraint(equalTo: childView.trailingAnchor, constant: 20.0)
         return [
             leading,
             top,
@@ -78,10 +78,10 @@ public class ComplexView: UIView {
         ]
     }
 
-    private func layoutToplabel() -> [NSLayoutConstraint] {
-        let top = toplabel.topAnchor.constraint(equalTo: childview.topAnchor, constant: 8.0)
-        let leading = toplabel.leadingAnchor.constraint(equalTo: childview.leadingAnchor, constant: 8.0)
-        let trailing = childview.trailingAnchor.constraint(equalTo: toplabel.trailingAnchor, constant: 8.0)
+    private func layoutTopLabel() -> [NSLayoutConstraint] {
+        let top = topLabel.topAnchor.constraint(equalTo: childView.topAnchor, constant: 8.0)
+        let leading = topLabel.leadingAnchor.constraint(equalTo: childView.leadingAnchor, constant: 8.0)
+        let trailing = childView.trailingAnchor.constraint(equalTo: topLabel.trailingAnchor, constant: 8.0)
         return [
             leading,
             top,
@@ -89,10 +89,10 @@ public class ComplexView: UIView {
         ]
     }
 
-    private func layoutCtabutton() -> [NSLayoutConstraint] {
-        let top = ctabutton.topAnchor.constraint(equalTo: toplabel.bottomAnchor, constant: 8.0)
-        let leading = ctabutton.leadingAnchor.constraint(equalTo: childview.layoutMarginsGuide.leadingAnchor, constant: 8.0)
-        let layoutMarginsGuidetrailing = childview.layoutMarginsGuide.trailingAnchor.constraint(equalTo: ctabutton.trailingAnchor, constant: 8.0)
+    private func layoutCtaButton() -> [NSLayoutConstraint] {
+        let top = ctaButton.topAnchor.constraint(equalTo: topLabel.bottomAnchor, constant: 8.0)
+        let leading = ctaButton.leadingAnchor.constraint(equalTo: childView.layoutMarginsGuide.leadingAnchor, constant: 8.0)
+        let layoutMarginsGuidetrailing = childView.layoutMarginsGuide.trailingAnchor.constraint(equalTo: ctaButton.trailingAnchor, constant: 8.0)
         return [
             layoutMarginsGuidetrailing,
             leading,
@@ -100,20 +100,20 @@ public class ComplexView: UIView {
         ]
     }
 
-    private func layoutSegmentcontrol() -> [NSLayoutConstraint] {
-        let top = segmentcontrol.topAnchor.constraint(equalTo: ctabutton.bottomAnchor, constant: 8.0)
-        let centerX = segmentcontrol.centerXAnchor.constraint(equalTo: childview.centerXAnchor)
+    private func layoutSegmentControl() -> [NSLayoutConstraint] {
+        let top = segmentControl.topAnchor.constraint(equalTo: ctaButton.bottomAnchor, constant: 8.0)
+        let centerX = segmentControl.centerXAnchor.constraint(equalTo: childView.centerXAnchor)
         return [
             centerX,
             top
         ]
     }
 
-    private func layoutTextfield() -> [NSLayoutConstraint] {
-        let top = textfield.topAnchor.constraint(equalTo: segmentcontrol.bottomAnchor, constant: 8.0)
-        let bottom = childview.bottomAnchor.constraint(equalTo: textfield.bottomAnchor, constant: 8.0)
-        let width = textfield.widthAnchor.constraint(equalToConstant: 200.0)
-        let centerX = textfield.centerXAnchor.constraint(equalTo: childview.centerXAnchor)
+    private func layoutTextField() -> [NSLayoutConstraint] {
+        let top = textField.topAnchor.constraint(equalTo: segmentControl.bottomAnchor, constant: 8.0)
+        let bottom = childView.bottomAnchor.constraint(equalTo: textField.bottomAnchor, constant: 8.0)
+        let width = textField.widthAnchor.constraint(equalToConstant: 200.0)
+        let centerX = textField.centerXAnchor.constraint(equalTo: childView.centerXAnchor)
         return [
             bottom,
             centerX,
