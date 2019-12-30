@@ -169,6 +169,8 @@ extension IBUIView {
         guard let object = objectLookup[hierarchy.objectID] else {
             throw IBUIViewError.objectNotFound(objectID: hierarchy.objectID)
         }
+        // TODO: Get `ibExternalExplicitTranslatesAutoresizingMaskIntoConstraints` for checking translates to auto resize
+        // TODO: Get `ibExternalExplicitLabel`
         switch object.rawClassValue {
         case "IBUIStackView": return IBUIStackView(label: hierarchy.label, name: hierarchy.name, nibObject: object)
         case "IBUIButton": return IBUIButton(label: hierarchy.label, name: hierarchy.name, nibObject: object)
