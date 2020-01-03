@@ -28,36 +28,36 @@ final class NibJectTests: XCTestCase {
     
     func testNoSubviewsContent() throws {
         let fileName = "NoSubviewsView"
-        let expected = try loadExpectedOutput(fileName)
-        let actual = try runNibject(for: fileName)
+        let expected = removeMetaCharaters(from: try loadExpectedOutput(fileName))
+        let actual = removeMetaCharaters(from: try runNibject(for: fileName))
         XCTAssertEqual(actual, expected)
     }
     
     func testGeneratedSwiftContainsSubviews() throws {
         let fileName = "SingleSubviewView"
-        let expected = try loadExpectedOutput(fileName)
-        let actual = try runNibject(for: fileName)
+        let expected = removeMetaCharaters(from: try loadExpectedOutput(fileName))
+        let actual = removeMetaCharaters(from: try runNibject(for: fileName))
         XCTAssertEqual(actual, expected)
     }
     
     func testSiblingSubviews() throws {
         let fileName = "SiblingSubviewsView"
-        let expected = try loadExpectedOutput(fileName)
-        let actual = try runNibject(for: fileName)
+        let expected = removeMetaCharaters(from: try loadExpectedOutput(fileName))
+        let actual = removeMetaCharaters(from: try runNibject(for: fileName))
         XCTAssertEqual(actual, expected)
     }
     
     func testDeepHierarchyView() throws {
         let fileName = "DeepHierarchyView"
-        let expected = try loadExpectedOutput(fileName)
-        let actual = try runNibject(for: fileName)
+        let expected = removeMetaCharaters(from: try loadExpectedOutput(fileName))
+        let actual = removeMetaCharaters(from: try runNibject(for: fileName))
         XCTAssertEqual(actual, expected)
     }
 
     func testComplexView() throws {
         let fileName = "ComplexView"
-        let expected = try loadExpectedOutput(fileName)
-        let actual = try runNibject(for: fileName)
+        let expected = removeMetaCharaters(from: try loadExpectedOutput(fileName))
+        let actual = removeMetaCharaters(from: try runNibject(for: fileName))
         XCTAssertEqual(actual, expected)
     }
     
@@ -71,5 +71,11 @@ final class NibJectTests: XCTestCase {
         _ = try NibJect.ejectNib(at: filePath, to: outputPath).get()
         return try File(path: "\(outputPath)/\(fileName).swift").readAsString()
     }
+    
+    private func removeMetaCharaters(from string: String) -> String {
+        if isStrictValidation { return string }
+        return string.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "\n", with: "")
+    }
 
+    private var isStrictValidation: Bool { return false }
 }

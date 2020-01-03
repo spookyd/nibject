@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import CodeWriter
 
 public struct IBLayoutConstraint {
 
@@ -111,47 +110,6 @@ public struct IBLayoutConstraint {
     public var constant: Float
     public var priority: Int
     public var multiplier: Float
-
-    public typealias ViewLocator = (Nib.ObjectID, Nib.ObjectID?) throws -> ((IBUIView, IBUIView?))
-    public func makeLayoutConstraintFunctionCall(_ viewLocator: ViewLocator) rethrows -> FunctionCall {
-        let locatedViews = try viewLocator(firstItemID, secondItemID)
-        let firstItem = locatedViews.0
-        var callee = ""
-        if firstItem.shouldUsePropertyName {
-            callee += "\(firstItem.propertyName)"
-        }
-        if !callee.isEmpty {
-            callee += "."
-        }
-        if firstItem.hasSafeArea {
-            callee += "safeAreaLayoutGuide."
-        }
-        callee += "\(firstAnchor.generateAnchor())."
-        var builder: FunctionCallComponentParameterizable = FunctionCallBuilder(named: "\(callee)constraint")
-        guard let secondItem = locatedViews.1 else {
-            return builder.parameter(label: "\(relation.generateRelation())Constant", name: "\(constant)").complete()
-        }
-        var secondProperty = ""
-        if secondItem.shouldUsePropertyName {
-            secondProperty += "\(secondItem.propertyName)"
-        }
-        if !secondProperty.isEmpty {
-            secondProperty += "."
-        }
-        if secondItem.hasSafeArea {
-            secondProperty += "safeAreaLayoutGuide."
-        }
-        builder = builder.parameter(label: relation.generateRelation(),
-                                    name: "\(secondProperty)\(secondAnchor.generateAnchor())")
-        if firstAnchor.isLayoutDimension {
-            builder = builder.parameter(label: "multiplier", name: "\(multiplier)")
-        }
-
-        if constant != 0.0 {
-            builder = builder.parameter(label: "constant", name: "\(constant)")
-        }
-        return builder.complete()
-    }
     
     public static func from(nib: Nib) -> [IBLayoutConstraint] {
         return nib.objects
@@ -165,7 +123,7 @@ public struct IBLayoutConstraint {
 
 }
 
-struct NibConstraintParser {
+private struct NibConstraintParser {
     var object: NibObject
 
     func parse() -> IBLayoutConstraint {

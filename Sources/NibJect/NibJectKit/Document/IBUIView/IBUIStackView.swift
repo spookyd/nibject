@@ -6,12 +6,11 @@
 //
 
 import Foundation
-import CodeWriter
 
 public class IBUIStackView: IBUIView {
     
-    override func addSubviewCallBuilder() -> FunctionCallBuilder {
-        return FunctionCallBuilder(named: "addArrangedSubview")
+    override func addSubviewMethodName() -> String {
+        return "addArrangedSubview"
     }
     
 }

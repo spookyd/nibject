@@ -13,8 +13,6 @@ public enum IBUIViewError: Error {
     case objectNotFound(objectID: Nib.ObjectID)
 }
 
-public typealias CodeBlock = String
-
 public class IBUIView: CustomStringConvertible {
     
     public let objectID: Nib.ObjectID
@@ -72,36 +70,8 @@ public class IBUIView: CustomStringConvertible {
         self.constraints.append(contentsOf: constraints)
     }
     
-    public func generateLazyProperty() -> Property {
-        let subclass = uikitRepresentation
-        return Property(rawValue: """
-        private lazy var \(propertyName): \(subclass) = {
-            let view = \(subclass)()
-            view.translatesAutoresizingMaskIntoConstraints = false
-            return view
-        }()
-        """)
-    }
-    
-    func addSubviewCallBuilder() -> FunctionCallBuilder {
-        return FunctionCallBuilder(named: "addSubview")
-    }
-    
-    func generateAddSubview() -> FunctionCall {
-        guard let parent = self.parent else {
-            return FunctionCall(rawValue: "")
-        }
-        let functionCall = addSubviewCallBuilder()
-            .parameter(label: .none, name: propertyName)
-            .complete()
-        if parent.isTopLevelView {
-            return functionCall
-        }
-        return FunctionCall(rawValue: "\(parent.propertyName).\(functionCall.output)")
-    }
-    
-    func makeLayoutSubView() -> String {
-        return "layout\(printableName.upperCamelCased)"
+    func addSubviewMethodName() -> String {
+        return "addSubview"
     }
     
     public var description: String {

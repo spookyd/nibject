@@ -8,33 +8,33 @@
 import UIKit
 
 public class SingleSubviewView: UIView {
-
+    
     // MARK: - Child Views
-
+    
     private lazy var childView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-
+    
     public init() {
         super.init(frame: .zero)
         setupSubviews()
     }
-
+    
     public required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     // MARK: - Layout
-
+    
     private func setupSubviews() {
         addSubview(childView)
         var constraints: [NSLayoutConstraint] = []
         constraints.append(contentsOf: layoutChildView())
         NSLayoutConstraint.activate(constraints)
     }
-
+    
     private func layoutChildView() -> [NSLayoutConstraint] {
         let top = childView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 20.0)
         let leading = childView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor)
@@ -47,5 +47,5 @@ public class SingleSubviewView: UIView {
             trailing
         ]
     }
-
+    
 }

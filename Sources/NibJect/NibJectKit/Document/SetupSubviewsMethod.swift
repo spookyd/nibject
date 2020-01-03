@@ -8,63 +8,87 @@
 import Foundation
 import CodeWriter
 
-class SetupSubviewsMethod {
+struct SetupSubviewsMethod {
     
+    private let constraintsExpression = RawExpression(rawValue: "constraints")
     let rootView: IBUIView
-    init(rootView: IBUIView) {
-        self.rootView = rootView
-    }
     
-    lazy var signature: Function = {
-        Function.createPrivate(named: "setupSubviews").complete()
-    }()
-    
-    func build() -> FunctionBody {
-        var composer: FunctionBodyComposable = FunctionBodyWriter(for: signature)
-        for call in composeAddSubviews() {
-            composer = composer.add(call)
+    func make() -> DeclarationRepresentable {
+        return FunctionDeclaration { builder in
+            builder.accessLevel(.private)
+            builder.setIdentifier("setupSubviews")
+            builder.statements(makeFunctionBody())
         }
-        composer = composer.add(Property(rawValue: "var constraints: [NSLayoutConstraint] = []"))
-        for call in composeLayoutConstraints() {
-            composer = composer.add(call)
+    }
+    
+    private func makeFunctionBody() -> [StatementRepresentable] {
+        var body: [StatementRepresentable] = []
+        body.append(contentsOf: makeAddSubviewCalls())
+        // FIXME: Fix shortcut
+        body.append(RawExpression(rawValue: "var \(constraintsExpression.outputText): [NSLayoutConstraint] = []"))
+        body.append(contentsOf: makeLayoutSubviewCalls())
+        let activateFunction = FunctionCallExpression { builder in
+            builder.functionName("activate")
+            builder.addArgument(value: constraintsExpression.outputText)
         }
-        
-        let activation = FunctionCallBuilder(named: "NSLayoutConstraint.activate")
-            .parameter(label: .none, name: "constraints")
-            .complete()
-        composer = composer.add(activation)
-        return composer.complete()
+        body.append(ExplicitMemberExpression(expression: RawExpression(rawValue: "NSLayoutConstraint"),
+                                             member: activateFunction))
+        return body
     }
     
-    private func composeAddSubviews() -> [FunctionCall] {
-        composeAddSubviews(for: rootView)
+    private func makeAddSubviewCalls() -> [StatementRepresentable] {
+        return makeAddSubviewCall(for: rootView)
     }
     
-    private func composeAddSubviews(for view: IBUIView) -> [FunctionCall] {
-        var calls: [FunctionCall] = []
+    private func makeAddSubviewCall(for view: IBUIView) -> [StatementRepresentable] {
+        var calls: [StatementRepresentable] = []
         for child in view.subviews {
-            calls.append(child.generateAddSubview())
+            calls.append(child.makeAddSubviewCall())
             if child.subviews.isEmpty { continue }
-            calls.append(contentsOf: composeAddSubviews(for: child))
+            calls.append(contentsOf: makeAddSubviewCall(for: child))
         }
         return calls
     }
     
-    private func composeLayoutConstraints() -> [FunctionCall] {
-       composeLayoutConstraints(for: rootView)
-   }
-   
-    private func composeLayoutConstraints(for view: IBUIView) -> [FunctionCall] {
-        var calls: [FunctionCall] = []
+    private func makeLayoutSubviewCalls() -> [StatementRepresentable] {
+        return makeLayoutSubviewCall(for: rootView)
+    }
+    
+    private func makeLayoutSubviewCall(for view: IBUIView) -> [StatementRepresentable] {
+        var calls: [StatementRepresentable] = []
         for child in view.subviews {
             if child.constraints.isEmpty { continue }
-            let layoutName = child.makeLayoutSubView()
-            let layoutCall = FunctionCall(rawValue: "constraints.append(contentsOf: \(layoutName)())")
-            calls.append(layoutCall)
+            let layoutExpression = child.makeLayoutMethodCall()
+            let constraintAppendCall = FunctionCallExpression { builder in
+                builder.functionName("append")
+                builder.addArgument(name: "contentsOf", value: layoutExpression.outputText)
+            }
+            calls.append(ExplicitMemberExpression(expression: constraintsExpression, member: constraintAppendCall))
             if child.subviews.isEmpty { continue }
-            calls.append(contentsOf: composeLayoutConstraints(for: child))
+            calls.append(contentsOf: makeLayoutSubviewCall(for: child))
         }
         return calls
     }
     
+}
+
+private extension IBUIView {
+    func makeAddSubviewCall() -> ExpressionRepresentable {
+        guard let parent = self.parent else {
+            return RawExpression(rawValue: "")
+        }
+        let functionCall = FunctionCallExpression { builder in
+            builder.functionName(addSubviewMethodName())
+            builder.addArgument(value: propertyName)
+        }
+        if parent.isTopLevelView { return functionCall }
+        return ExplicitMemberExpression(expression: RawExpression(rawValue: parent.propertyName),
+                                        member: functionCall)
+    }
+    
+    func makeLayoutMethodCall() -> ExpressionRepresentable {
+        return FunctionCallExpression { builder in
+            builder.functionName("layout\(printableName.upperCamelCased)")
+        }
+    }
 }
