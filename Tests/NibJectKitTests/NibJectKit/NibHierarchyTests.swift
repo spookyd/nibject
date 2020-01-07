@@ -6,7 +6,7 @@
 //
 
 import XCTest
-@testable import NibJect
+@testable import NibJectKit
 
 final class NibHierarchyTests: XCTestCase {
     

@@ -19,6 +19,10 @@ struct LazySubviewPropertySectionMaker {
     private func makeLazyProperties(for view: IBUIView) -> [DeclarationRepresentable] {
         var properties: [DeclarationRepresentable] = []
         for child in view.subviews {
+            if !child.hasCustomName {
+                let debugComment = "ObjectID: \(child.objectID); Missing Xcode Label"
+                properties.append(SingleLineCommentDeclaration(debugComment))
+            }
             properties.append(LazySubviewPropertyDeclarationMaker(view: child).make())
             properties.append(RawDeclaration.newline)
             if child.subviews.isEmpty { continue }
@@ -44,11 +48,12 @@ struct LazySubviewPropertyDeclarationMaker {
             }
             let translatesExpression = ExplicitMemberExpression(expression: RawExpression(rawValue: closurePropName),
                                                                 member: RawExpression(rawValue: "translatesAutoresizingMaskIntoConstraints"))
+            let translatesValue = "\(view.translatesToAutoResizeMask)"
             let returnValue = ReturnExpression(expression: RawExpression(rawValue: closurePropName))
             builder.bodyStatements([
                 constant,
                 AssignmentOperatorExpression(expression: translatesExpression,
-                                             value: RawExpression(rawValue: "false")),
+                                             value: RawExpression(rawValue: translatesValue)),
                 returnValue
             ])
         }

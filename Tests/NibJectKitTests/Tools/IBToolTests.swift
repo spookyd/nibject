@@ -7,7 +7,7 @@
 
 import Files
 import XCTest
-@testable import NibJect
+@testable import NibJectKit
 
 final class IBToolsTests: XCTestCase {
     func testReadsNibFile() {

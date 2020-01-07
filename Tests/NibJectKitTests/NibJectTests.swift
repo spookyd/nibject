@@ -1,6 +1,6 @@
 import Files
 import XCTest
-@testable import NibJect
+@testable import NibJectKit 
 
 final class NibJectTests: XCTestCase {
     func testOutputSwiftFile() throws {
@@ -61,6 +61,14 @@ final class NibJectTests: XCTestCase {
         XCTAssertEqual(actual, expected)
     }
     
+    func testNoCustomNamesView() throws {
+        let fileName = "NoCustomNameView"
+        let expected = removeMetaCharaters(from: try loadExpectedOutput(fileName))
+        let actual = removeMetaCharaters(from: try runNibject(for: fileName))
+        XCTAssertEqual(actual, expected)
+    }
+    
+    // MAKR: - Utilities
     private func loadExpectedOutput(_ fileName: String) throws -> String {
         return try File(path: URL.resources.appendingPathComponent("\(fileName).swift").path).readAsString()
     }
@@ -77,5 +85,7 @@ final class NibJectTests: XCTestCase {
         return string.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "\n", with: "")
     }
 
-    private var isStrictValidation: Bool { return false }
+    private var isStrictValidation: Bool {
+        return ProcessInfo.processInfo.arguments.contains("-strict-test-validation")
+    }
 }

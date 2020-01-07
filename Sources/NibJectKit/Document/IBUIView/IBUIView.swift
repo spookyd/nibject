@@ -16,7 +16,9 @@ public enum IBUIViewError: Error {
 public class IBUIView: CustomStringConvertible {
     
     public let objectID: Nib.ObjectID
+    /// The label that is set in the Hierarchy Plist
     public let label: String
+    /// The name that is set in the HIerarchy Plist
     public let name: String
     let rawData: NibObject
     
@@ -30,12 +32,28 @@ public class IBUIView: CustomStringConvertible {
         return rawData.rawClassValue.replacingOccurrences(of: "IB", with: "")
     }
     
-    var printableName: String {
-        // Validate valid characters
+    public var translatesToAutoResizeMask: Bool {
+        guard let value = rawData.content["ibExternalExplicitTranslatesAutoresizingMaskIntoConstraints"] as? Bool else {
+            return !constraints.isEmpty
+        }
+        return value
+    }
+    
+    public var customName: String? { rawData.content["ibExternalExplicitLabel"] as? String }
+    
+    public var hasCustomName: Bool { customName != nil }
+    
+    public var displayName: String {
+        if let customName = self.customName { return customName }
         if name.isEmpty {
             return label
         }
         return name
+    }
+    
+    var printableName: String {
+        let validChars = Set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_")
+        return displayName.filter({ validChars.contains($0) })
     }
     
     var propertyName: String {
@@ -146,29 +164,6 @@ extension IBUIView {
         case "IBUIStackView": return IBUIStackView(label: hierarchy.label, name: hierarchy.name, nibObject: object)
         case "IBUIButton": return IBUIButton(label: hierarchy.label, name: hierarchy.name, nibObject: object)
         default: return IBUIView(label: hierarchy.label, name: hierarchy.name, nibObject: object)
-        }
-    }
-    
-}
-
-class ConstraintBuilder {
-    let flattendView: [IBUIView]
-    
-    init(flattendView: [IBUIView]) {
-        self.flattendView = flattendView
-    }
-    
-    func assign(constraints: [IBLayoutConstraint]) {
-        var usedConstraints: [Nib.ObjectID] = []
-        for view in flattendView.reversed() {
-            if usedConstraints.count == constraints.count { return }
-            let matchedConstraints = constraints.filter({
-                !usedConstraints.contains($0.objectID)
-                    && ($0.firstItemID == view.objectID || $0.secondItemID == view.objectID)
-            })
-            if matchedConstraints.isEmpty { continue }
-            view.addConstraints(matchedConstraints)
-            usedConstraints.append(contentsOf: matchedConstraints.map({ $0.objectID }))
         }
     }
     
