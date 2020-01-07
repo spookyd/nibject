@@ -7,10 +7,17 @@
 
 import Foundation
 
-public enum InterfaceBuilderPlistError: Error {
-    case fileNotFound
-    case fileReadFailure(underlyingError: Error)
-    case deserializationFailure(underlyingError: Error)
+public struct IBToolError: Error {
+    var description: String
+    init?(rawValue: [AnyHashable: Any]) {
+        guard let description = rawValue["description"] as? String else {
+            return nil
+        }
+        self.description = description
+    }
+    public var localizedDescription: String {
+        return description
+    }
 }
 
 public struct InterfaceBuilderPlist {
@@ -33,7 +40,8 @@ public extension InterfaceBuilderPlist {
 
 extension InterfaceBuilderPlist {
     
-    public static func from(_ filePath: String, using ibTool: IBTool = IBTool()) -> Result<InterfaceBuilderPlist, InterfaceBuilderPlistError> {
+    public static func from(_ filePath: String,
+                            using ibTool: IBTool = IBTool()) -> Result<InterfaceBuilderPlist, NibjectError> {
         switch ibTool.run(filePath, [.classes, .connections, .hierarchy, .objects]) {
         case .success(let data):
             do {
@@ -44,9 +52,11 @@ extension InterfaceBuilderPlist {
                 let connections = dictionary[CodingKeys.connections.stringValue] as? [AnyHashable: Any] ?? [:]
                 let hierarchy = dictionary[CodingKeys.hierarchy.stringValue] as? [Any] ?? []
                 let objects = dictionary[CodingKeys.objects.stringValue] as? [AnyHashable: Any] ?? [:]
-                let errors = dictionary[CodingKeys.errors.stringValue] as? [Any] ?? []
-                guard errors.isEmpty else {
-                    return .failure(InterfaceBuilderPlistError.fileNotFound)
+                let errors = dictionary[CodingKeys.errors.stringValue] as? [[AnyHashable: Any]] ?? []
+                let transformedErrors = errors.compactMap(IBToolError.init)
+                guard transformedErrors.isEmpty else {
+                    let messages = transformedErrors.map({ $0.localizedDescription })
+                    return .failure(.interfaceBuilderParsingError(reason: .ibtoolInputFailure(errorMessages: messages)))
                 }
                 let plist = InterfaceBuilderPlist(classes: classes,
                                                   connections: connections,
@@ -54,10 +64,10 @@ extension InterfaceBuilderPlist {
                                                   objects: objects)
                 return .success(plist)
             } catch {
-                return .failure(.deserializationFailure(underlyingError: error))
+                return .failure(.interfaceBuilderParsingError(reason: .deserializationFailure(underlyingError: error)))
             }
         case .failure(let error):
-            return .failure(.fileReadFailure(underlyingError: error))
+            return .failure(.interfaceBuilderParsingError(reason: .ibtoolFailure(underlyingError: error)))
         }
     }
 }

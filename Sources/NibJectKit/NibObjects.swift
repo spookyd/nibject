@@ -11,6 +11,14 @@ public enum NibObjectError: Error {
     case missingObjectID
     case missingClassType
     case missingClassDetails
+    
+    public var localizedDescription: String {
+        switch self {
+        case .missingObjectID: return "Missing required key 'objectID'"
+        case .missingClassType: return "Missing class type"
+        case .missingClassDetails: return "Missing class details"
+        }
+    }
 }
 
 public typealias NibObjects = [NibObject]

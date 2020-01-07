@@ -137,6 +137,7 @@ extension IBUIView {
     
     private static func from(hierarchy: NibHierarchy, objectLookup: [Nib.ObjectID: NibObject]) throws -> IBUIView {
         guard let object = objectLookup[hierarchy.objectID] else {
+            // TODO: report to diagnostics
             throw IBUIViewError.objectNotFound(objectID: hierarchy.objectID)
         }
         // TODO: Get `ibExternalExplicitTranslatesAutoresizingMaskIntoConstraints` for checking translates to auto resize

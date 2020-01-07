@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "NibJectCLI"
-               BuildableName = "NibJectCLI"
-               BlueprintName = "NibJectCLI"
+               BlueprintIdentifier = "nibject"
+               BuildableName = "nibject"
+               BlueprintName = "nibject"
                ReferencedContainer = "container:">
             </BuildableReference>
          </BuildActionEntry>
@@ -44,20 +44,28 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "NibJectCLI"
-            BuildableName = "NibJectCLI"
-            BlueprintName = "NibJectCLI"
+            BlueprintIdentifier = "nibject"
+            BuildableName = "nibject"
+            BlueprintName = "nibject"
             ReferencedContainer = "container:">
          </BuildableReference>
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "--input=~/Documents/Development/poc/NibJect/Tests/Resources/NoSubviewsView.xib"
+            argument = "nibject"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "~/Documents/Development/poc/NibJect/Tests/Resources/NoSubviewsView.swift"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "--output=~/Downloads"
-            isEnabled = "YES">
+            argument = "-output=~/Downloads"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "--help"
+            isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>
    </LaunchAction>
@@ -67,16 +75,6 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "NibJectCLI"
-            BuildableName = "NibJectCLI"
-            BlueprintName = "NibJectCLI"
-            ReferencedContainer = "container:">
-         </BuildableReference>
-      </BuildableProductRunnable>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

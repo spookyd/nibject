@@ -7,25 +7,21 @@ let package = Package(
     name: "NibJect",
     products: [
         // Products define the executables and libraries produced by a package, and make them visible to other packages.
-        .executable(name: "NibJectCLI", targets: ["NibJectCLI"])
-//        .library(
-//            name: "NibJectCLI",
-//            type: .dynamic,
-//            targets: ["NibJectCLI"]),
+        .executable(name: "nibject", targets: ["nibject"])
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-package-manager.git", from: "0.5.0"),
+        .package(url: "https://github.com/apple/swift-tools-support-core.git", from: "0.0.1"),
         .package(url: "https://github.com/JohnSundell/Files", from: "4.0.0"),
         .package(path: "../CodeWriter")
     ],
     targets: [
-        .target(name: "NibJectCLI",
-                dependencies: ["SPMUtility", "NibJect"]),
+        .target(name: "nibject",
+                dependencies: ["SwiftToolsSupport-auto", "NibJectKit"]),
         .target(
-            name: "NibJect",
+            name: "NibJectKit",
             dependencies: ["Files", "CodeWriter"]),
         .testTarget(
-            name: "NibJectTests",
-            dependencies: ["NibJect", "Files"]),
+            name: "NibJectKitTests",
+            dependencies: ["NibJectKit", "Files"]),
     ]
 )

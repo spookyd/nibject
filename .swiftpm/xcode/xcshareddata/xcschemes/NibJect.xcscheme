@@ -14,37 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "NibJect"
-               BuildableName = "NibJect"
-               BlueprintName = "NibJect"
-               ReferencedContainer = "container:">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "NibJectTests"
-               BuildableName = "NibJectTests"
-               BlueprintName = "NibJectTests"
-               ReferencedContainer = "container:">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "NibJectCLI"
-               BuildableName = "NibJectCLI"
-               BlueprintName = "NibJectCLI"
+               BlueprintIdentifier = "NibJectKit"
+               BuildableName = "NibJectKit"
+               BlueprintName = "NibJectKit"
                ReferencedContainer = "container:">
             </BuildableReference>
          </BuildActionEntry>
@@ -70,9 +42,9 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "NibJectTests"
-               BuildableName = "NibJectTests"
-               BlueprintName = "NibJectTests"
+               BlueprintIdentifier = "NibJectKitTests"
+               BuildableName = "NibJectKitTests"
+               BlueprintName = "NibJectKitTests"
                ReferencedContainer = "container:">
             </BuildableReference>
          </TestableReference>
@@ -105,15 +77,6 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "NibJect"
-            BuildableName = "NibJect"
-            BlueprintName = "NibJect"
-            ReferencedContainer = "container:">
-         </BuildableReference>
-      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

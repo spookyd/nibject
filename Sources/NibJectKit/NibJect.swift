@@ -1,7 +1,8 @@
 public struct NibJect {
     
     @discardableResult
-    public static func ejectNib(at inputPath: String, to outputPath: String) -> Result<GeneratedSwiftFile, Error> {
+    public static func ejectNib(at inputPath: String,
+                                to outputPath: String) -> Result<GeneratedSwiftFile, NibjectError> {
         do {
             let plist = try InterfaceBuilderPlist.from(inputPath).get()
             let nib = try Nib.from(plist).get()
@@ -11,13 +12,14 @@ public struct NibJect {
             ConstraintBuilder(flattendView: viewGraph).assign(constraints: constraints)
             let fileName = getOutputFileName(inputPath)
             let swiftClass = try GeneratedSwiftFile.from(view, named: fileName).get()
-            let result = swiftClass.writeToFile(at: outputPath)
-            switch result {
-            case .success: return .success(swiftClass)
-            case .failure(let error): return .failure(error)
-            }
-        } catch {
+            _ = try swiftClass.writeToFile(at: outputPath).get()
+            return .success(swiftClass)
+        } catch let error as NibjectError {
             return .failure(error)
+        } catch let error as IBUIViewError {
+            return .failure(error.asNibjectError())
+        } catch {
+            return .failure(.unknownError(underlyingError: error))
         }
     }
     
