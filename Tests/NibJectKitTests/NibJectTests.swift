@@ -68,7 +68,7 @@ final class NibJectTests: XCTestCase {
         XCTAssertEqual(actual, expected)
     }
     
-    // MAKR: - Utilities
+    // MARK: - Utilities
     private func loadExpectedOutput(_ fileName: String) throws -> String {
         return try File(path: URL.resources.appendingPathComponent("\(fileName).swift").path).readAsString()
     }

@@ -8,32 +8,32 @@
 import UIKit
 
 public class SiblingSubviewsView: UIView {
-
+    
     // MARK: - Child Views
-
+    
     private lazy var childView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-
+    
     private lazy var childView2: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-
+    
     public init() {
         super.init(frame: .zero)
         setupSubviews()
     }
-
+    
     public required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     // MARK: - Layout
-
+    
     private func setupSubviews() {
         addSubview(childView)
         addSubview(childView2)
@@ -42,7 +42,7 @@ public class SiblingSubviewsView: UIView {
         constraints.append(contentsOf: layoutChildView2())
         NSLayoutConstraint.activate(constraints)
     }
-
+    
     private func layoutChildView() -> [NSLayoutConstraint] {
         let top = childView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 20.0)
         let leading = childView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 8.0)
@@ -55,7 +55,7 @@ public class SiblingSubviewsView: UIView {
             trailing
         ]
     }
-
+    
     private func layoutChildView2() -> [NSLayoutConstraint] {
         let top = childView2.topAnchor.constraint(equalTo: childView.bottomAnchor, constant: 20.0)
         let leading = childView2.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 8.0)
@@ -68,5 +68,5 @@ public class SiblingSubviewsView: UIView {
             trailing
         ]
     }
-
+    
 }

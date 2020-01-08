@@ -34,10 +34,28 @@ public class IBUIView: CustomStringConvertible {
     
     public var translatesToAutoResizeMask: Bool {
         guard let value = rawData.content["ibExternalExplicitTranslatesAutoresizingMaskIntoConstraints"] as? Bool else {
-            return !constraints.isEmpty
+            return constraints.isEmpty
         }
         return value
     }
+    
+    // TODO: ibExternalUserDefinedRuntimeAttributes
+    /*
+     Example:
+     <key>ibExternalUserDefinedRuntimeAttributes</key>
+     <array>
+             <dict>
+                     <key>keyPath</key>
+                     <string>layer.cornerRadius</string>
+                     <key>localized</key>
+                     <string>NO</string>
+                     <key>typeIdentifier</key>
+                     <string>com.apple.InterfaceBuilder.userDefinedRuntimeAttributeType.number</string>
+                     <key>value</key>
+                     <integer>10</integer>
+             </dict>
+     </array>
+     */
     
     public var customName: String? { rawData.content["ibExternalExplicitLabel"] as? String }
     
@@ -51,13 +69,13 @@ public class IBUIView: CustomStringConvertible {
         return name
     }
     
-    var printableName: String {
-        let validChars = Set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_")
-        return displayName.filter({ validChars.contains($0) })
+    var propertyName: String {
+        return removeIllegalCharacters(from: displayName.lowerCamelCased)
     }
     
-    var propertyName: String {
-        return printableName.lowerCamelCased
+    private func removeIllegalCharacters(from string: String) -> String {
+        let validChars = Set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_")
+        return string.filter({ validChars.contains($0) })
     }
     
     var shouldUsePropertyName: Bool {

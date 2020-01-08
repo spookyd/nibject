@@ -78,7 +78,7 @@ private extension IBUIView {
             return RawExpression(rawValue: "")
         }
         let functionCall = FunctionCallExpression { builder in
-            builder.functionName(addSubviewMethodName())
+            builder.functionName(parent.addSubviewMethodName())
             builder.addArgument(value: propertyName)
         }
         if parent.isTopLevelView { return functionCall }
@@ -88,7 +88,7 @@ private extension IBUIView {
     
     func makeLayoutMethodCall() -> ExpressionRepresentable {
         return FunctionCallExpression { builder in
-            builder.functionName("layout\(printableName.upperCamelCased)")
+            builder.functionName("layout\(propertyName.upperCamelCased)")
         }
     }
 }

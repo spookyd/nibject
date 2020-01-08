@@ -39,7 +39,7 @@ extension NibjectError.InterfaceBuilderParsingFailureReason {
     var localizedDescription: String {
         switch self {
         case .ibtoolInputFailure(let errorMessages):
-            return "IBTool failed while reading the file with the following errors:\(errorMessages.joined(separator: ", "))"
+            return "IBTool failed while reading the file with the following errors: \(errorMessages.joined(separator: ", "))"
         case .ibtoolFailure(let underlyingError):
             return "IBTool failed with the following error:\n\(underlyingError.localizedDescription)"
         case .deserializationFailure(let underlyingError):
