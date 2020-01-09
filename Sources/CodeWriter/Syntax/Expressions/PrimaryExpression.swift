@@ -1,39 +1,39 @@
 import Foundation
 
 public struct SelfExpression: ExpressionRepresentable {
-    
+
     public private(set) var outputText: String
-    
+
     init(output: String) {
         self.outputText = "self\(output)"
     }
-    
+
     public init(memberName: String) {
         self.init(output: ".\(memberName)")
     }
-    
+
     public static func initializer(_ initializerExpression: InitializerExpression) -> SelfExpression {
         return SelfExpression(memberName: initializerExpression.outputText)
     }
-    
+
 }
 
 public struct SuperExpression: ExpressionRepresentable {
-    
+
     public private(set) var outputText: String
-    
+
     init(output: String) {
         self.outputText = "super\(output)"
     }
-    
+
     public init(memberName: String) {
         self.init(output: ".\(memberName)")
     }
-    
+
     public static func initializer(_ initializerExpression: InitializerExpression) -> SuperExpression {
         return SuperExpression(memberName: initializerExpression.outputText)
     }
-    
+
 }
 
 /**
@@ -45,7 +45,7 @@ struct ClosureSyntaxData {
     struct Parameter {
         var argumentName: String
         var valueType: String?
-        
+
         var outputText: String {
             guard let valueType = self.valueType else {
                 return "\(argumentName)"
@@ -59,12 +59,12 @@ struct ClosureSyntaxData {
 }
 
 public struct ClosureExpressionBuilder: Buildable {
-    
+
     private var data: ClosureSyntaxData
     init() {
         data = ClosureSyntaxData()
     }
-    
+
     public func build(within context: WritingContext) -> String {
         var output = ""
         output += "{"
@@ -90,15 +90,15 @@ public struct ClosureExpressionBuilder: Buildable {
         output += "}"
         return output
     }
-    
+
     public mutating func addParameter(_ argumentName: String, withExplicitType explicitType: String? = .none) {
         data.parameters.append(ClosureSyntaxData.Parameter(argumentName: argumentName, valueType: explicitType))
     }
-    
+
     public mutating func returnType(_ returnType: String?) {
         data.returnType = returnType
     }
-    
+
     public mutating func bodyStatements(_ statements: [StatementRepresentable]) {
         data.statements = statements
     }
@@ -106,16 +106,16 @@ public struct ClosureExpressionBuilder: Buildable {
 
 public struct ClosureExpression: ExpressionRepresentable {
     public private(set) var outputText: String
-    
+
     internal init(_ output: String) {
         self.outputText = output
     }
-    
+
     public init(_ build: (inout ClosureExpressionBuilder) -> Void) {
         var builder = ClosureExpressionBuilder()
         build(&builder)
         let syntax = builder.build(within: WritingContext())
         self.init(syntax)
     }
-    
+
 }

@@ -9,17 +9,17 @@ import Foundation
 @testable import NibJectKit
 
 extension NibObject {
-    
+
     static func makeView(_ objectID: Nib.ObjectID = UUID().uuidString) -> NibObject {
         return NibObject(objectID: objectID, classType: .view, rawClassValue: "UIView", content: [:])
     }
-    
+
     static func makeConstraint(_ objectID: Nib.ObjectID = UUID().uuidString,
                                firstItem: String,
                                secondItem: String?,
-                               firstAttribute: IBLayoutConstraint.Anchor = IBLayoutConstraint.Anchor(rawValue: Int.random(in: 1...20))!,
-                               secondAttribute: IBLayoutConstraint.Anchor = IBLayoutConstraint.Anchor(rawValue: Int.random(in: 1...20))!,
-                               relation: IBLayoutConstraint.Relation = IBLayoutConstraint.Relation(rawValue: Int.random(in: -1...1))!,
+                               firstAttribute: IBLayoutConstraint.Anchor = .random(),
+                               secondAttribute: IBLayoutConstraint.Anchor = .random(),
+                               relation: IBLayoutConstraint.Relation = .random(),
                                constant: Float = Float.random(in: 0...100),
                                multiplier: Float = 1.0) -> NibObject {
         var content: [AnyHashable: Any] = [
@@ -39,5 +39,23 @@ extension NibObject {
                          rawClassValue: "IBUILayoutConstraint",
                          content: content)
     }
-    
+
+}
+
+extension IBLayoutConstraint.Anchor {
+    static func random() -> IBLayoutConstraint.Anchor {
+        guard let anchor = IBLayoutConstraint.Anchor(rawValue: Int.random(in: 1...20)) else {
+            return .none
+        }
+        return anchor
+    }
+}
+
+extension IBLayoutConstraint.Relation {
+    static func random() -> IBLayoutConstraint.Relation {
+        guard let relation = IBLayoutConstraint.Relation(rawValue: Int.random(in: -1...1)) else {
+            return .equalTo
+        }
+        return relation
+    }
 }

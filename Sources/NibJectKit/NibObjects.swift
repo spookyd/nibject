@@ -11,7 +11,7 @@ public enum NibObjectError: Error {
     case missingObjectID
     case missingClassType
     case missingClassDetails
-    
+
     public var localizedDescription: String {
         switch self {
         case .missingObjectID: return "Missing required key 'objectID'"

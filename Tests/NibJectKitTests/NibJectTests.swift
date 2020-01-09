@@ -1,6 +1,6 @@
 import Files
+@testable import NibJectKit
 import XCTest
-@testable import NibJectKit 
 
 final class NibJectTests: XCTestCase {
     func testOutputSwiftFile() throws {
@@ -11,7 +11,7 @@ final class NibJectTests: XCTestCase {
         let exists = try Folder(path: outputPath).containsFile(named: "\(title).swift")
         XCTAssertTrue(exists)
     }
-    
+
     func testGeneratedSwiftFileHasHeaderDoc() throws {
         let fileName = "SingleSubviewView"
         let filePath = URL.resources.appendingPathComponent("\(fileName).xib").path
@@ -25,28 +25,28 @@ final class NibJectTests: XCTestCase {
         // Line 5 of Swift file
         XCTAssertEqual(content[4], expectedAccreditation)
     }
-    
+
     func testNoSubviewsContent() throws {
         let fileName = "NoSubviewsView"
         let expected = removeMetaCharaters(from: try loadExpectedOutput(fileName))
         let actual = removeMetaCharaters(from: try runNibject(for: fileName))
         XCTAssertEqual(actual, expected)
     }
-    
+
     func testGeneratedSwiftContainsSubviews() throws {
         let fileName = "SingleSubviewView"
         let expected = removeMetaCharaters(from: try loadExpectedOutput(fileName))
         let actual = removeMetaCharaters(from: try runNibject(for: fileName))
         XCTAssertEqual(actual, expected)
     }
-    
+
     func testSiblingSubviews() throws {
         let fileName = "SiblingSubviewsView"
         let expected = removeMetaCharaters(from: try loadExpectedOutput(fileName))
         let actual = removeMetaCharaters(from: try runNibject(for: fileName))
         XCTAssertEqual(actual, expected)
     }
-    
+
     func testDeepHierarchyView() throws {
         let fileName = "DeepHierarchyView"
         let expected = removeMetaCharaters(from: try loadExpectedOutput(fileName))
@@ -60,26 +60,26 @@ final class NibJectTests: XCTestCase {
         let actual = removeMetaCharaters(from: try runNibject(for: fileName))
         XCTAssertEqual(actual, expected)
     }
-    
+
     func testNoCustomNamesView() throws {
         let fileName = "NoCustomNameView"
         let expected = removeMetaCharaters(from: try loadExpectedOutput(fileName))
         let actual = removeMetaCharaters(from: try runNibject(for: fileName))
         XCTAssertEqual(actual, expected)
     }
-    
+
     // MARK: - Utilities
     private func loadExpectedOutput(_ fileName: String) throws -> String {
         return try File(path: URL.resources.appendingPathComponent("\(fileName).swift").path).readAsString()
     }
-    
+
     private func runNibject(for fileName: String) throws -> String {
         let filePath = URL.resources.appendingPathComponent("\(fileName).xib").path
         let outputPath = Folder.temporary.path
         _ = try NibJect.ejectNib(at: filePath, to: outputPath).get()
         return try File(path: "\(outputPath)/\(fileName).swift").readAsString()
     }
-    
+
     private func removeMetaCharaters(from string: String) -> String {
         if isStrictValidation { return string }
         return string.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "\n", with: "")

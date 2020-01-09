@@ -9,7 +9,7 @@ import CodeWriter
 import Foundation
 
 public struct HeaderDoc: DeclarationRepresentable {
-    
+
     public var fileName: String
     public var outputText: String {
         """

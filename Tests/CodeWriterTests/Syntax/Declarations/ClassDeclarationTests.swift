@@ -1,5 +1,5 @@
-import XCTest
 @testable import CodeWriter
+import XCTest
 
 final class ClassDeclarationTests: XCTestCase {
     func testSimpleClassDeclaration() {

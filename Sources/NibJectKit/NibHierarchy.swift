@@ -25,13 +25,13 @@ extension NibHierarchy {
         case name = "name"
         case children = "children"
     }
-    
+
     public static let fileOwnerObjectID = "-1"
     public static let firstResponderObjectID = "-2"
 }
 
 public extension NibHierarchy {
-    
+
     func find(_ objectID: String) -> NibHierarchy? {
         if self.objectID == objectID { return self }
         for child in children {
@@ -41,7 +41,7 @@ public extension NibHierarchy {
         }
         return .none
     }
-    
+
     /// Only supports one view per nib
     static func from(_ plist: InterfaceBuilderPlist) -> Result<[NibHierarchy], NibHierarchyError> {
         guard let hierarchy = plist.hierarchy as? [[AnyHashable: Any]] else {
@@ -53,7 +53,7 @@ public extension NibHierarchy {
         if topLevelViews.isEmpty { return .failure(.viewNotFound) }
         return .success(topLevelViews)
     }
-    
+
     private static func parse(_ dictionary: [AnyHashable: Any]) -> NibHierarchy {
         let objectID = dictionary[CodingKeys.objectID.stringValue] as? String ?? ""
         let label = dictionary[CodingKeys.label.stringValue] as? String ?? ""
@@ -72,5 +72,3 @@ public extension Array where Element == NibHierarchy {
         return .none
     }
 }
-
-

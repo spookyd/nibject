@@ -5,11 +5,11 @@
 //  Created by Luke Davis on 11/30/19.
 //
 
-import XCTest
 @testable import NibJectKit
+import XCTest
 
 final class NibObjectsTests: XCTestCase {
-    
+
     func testFrom() {
         let expected: [AnyHashable: [AnyHashable: Any]] = [
             "0gL-9z-1oC": ["class": "IBUIView"]
@@ -23,7 +23,7 @@ final class NibObjectsTests: XCTestCase {
             XCTFail("Expected to be successful")
         }
     }
-    
+
     func testFrom_invalidKey() {
         let expected: [AnyHashable: [AnyHashable: Any]] = [
             123: ["class": "IBUIView"]
@@ -40,7 +40,7 @@ final class NibObjectsTests: XCTestCase {
             XCTFail("Expected to be failure")
         }
     }
-    
+
     func testFrom_invalidContent() {
         let expected: [AnyHashable: Any] = [
             "0gL-9z-1oC": ["123", "asdf"]
@@ -57,5 +57,5 @@ final class NibObjectsTests: XCTestCase {
             XCTFail("Expected to be successful")
         }
     }
-    
+
 }

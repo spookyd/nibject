@@ -9,6 +9,7 @@ public struct Syntax {
 public struct WritingContext {
     public enum Indentation {
         case tab
+        // swiftlint:disable:next identifier_name
         case space(count: Int)
     }
     public var indentationLevel: Int = 0

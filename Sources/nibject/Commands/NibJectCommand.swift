@@ -11,10 +11,10 @@ import TSCBasic
 import TSCUtility
 
 struct NibJectCommand: Command {
-    
+
     let command: String = "eject"
     let overview: String = "Convert a .xib file into a generated Swift code"
-    
+
     init(parser: ArgumentParser, optionsBinder: ArgumentBinder<NibjectOptions>) {
         let filePath = parser.add(positional: "input",
                                   kind: String.self,
@@ -29,7 +29,7 @@ struct NibJectCommand: Command {
                                      completion: ShellCompletion.none)
         optionsBinder.bind(option: outFilePath, to: { $0.outputFilePath = $1 })
     }
-    
+
     func run(with options: NibjectOptions) throws {
         guard let filePath = options.inputFilePath else {
             return
@@ -49,5 +49,5 @@ struct NibJectCommand: Command {
         let data = try NibJect.ejectNib(at: inputPath, to: outputPath).get()
         print("Ejected \(data.fileName) to \(outputPath)")
     }
-    
+
 }

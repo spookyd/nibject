@@ -11,6 +11,6 @@ import TSCBasic
 public class NibjectOptions {
     public var inputFilePath: String?
     public var outputFilePath: String?
-    
+
     public required init() {}
 }

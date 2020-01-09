@@ -10,13 +10,13 @@ import Foundation
 
 struct JoinedDeclarationExpression: DeclarationRepresentable {
     var outputText: String
-    
+
     init(_ declarations: [DeclarationRepresentable]) {
         let builder = Builder(declarations: declarations)
         let syntax = builder.build(within: WritingContext())
         outputText = syntax
     }
-    
+
     private struct Builder: Buildable {
         var declarations: [DeclarationRepresentable]
         func build(within context: WritingContext) -> String {

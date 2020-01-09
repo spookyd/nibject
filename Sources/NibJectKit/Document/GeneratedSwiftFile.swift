@@ -5,11 +5,12 @@
 //  Created by Luke Davis on 11/30/19.
 //
 
-import Foundation
 import CodeWriter
 import Files
+import Foundation
 
 public enum GeneratedSwiftFileError: Error {
+    // swiftlint:disable:next identifier_name
     case missingConstraintItem(missingObjectID: Nib.ObjectID)
 }
 
@@ -32,7 +33,7 @@ public extension GeneratedSwiftFile {
             return .failure(error)
         }
     }
-    
+
     private func generateContent() throws -> String {
         let accessLevel = AccessLevel.public
         let topLevel = TopLevelDeclaration { builder in
@@ -83,7 +84,9 @@ public extension GeneratedSwiftFile {
                             // setup subviews
                             builder.add(SetupSubviewsMethod(rootView: view).make())
                             // [Layout functions]
-                            let subviewLayoutSection = ViewLayoutSectionMaker(rootView: view).make()
+                            guard let subviewLayoutSection = try? ViewLayoutSectionMaker(rootView: view).make() else {
+                                return
+                            }
                             if !subviewLayoutSection.outputText.isEmpty {
                                 builder.add(subviewLayoutSection)
                             }

@@ -12,6 +12,6 @@ do {
     var registry = CommandRegistry(usage: "--input <filepath> [--output <filepath>]",
                                    overview: "Converts xib files into generated swift code")
     registry.main(NibJectCommand.self)
-    
+
     registry.run(Array(CommandLine.arguments.dropFirst()))
 }

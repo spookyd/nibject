@@ -5,10 +5,9 @@
 //  Created by Luke Davis on 11/25/19.
 //
 
-import XCTest
 @testable import NibJectKit
+import XCTest
 
 final class NibTests: XCTestCase {
-  
-    
+
 }

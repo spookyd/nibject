@@ -9,13 +9,13 @@ import CodeWriter
 import Foundation
 
 struct LazySubviewPropertySectionMaker {
-    
+
     var rootView: IBUIView
-    
+
     func make() -> DeclarationRepresentable {
         JoinedDeclarationExpression(makeLazyProperties(for: rootView))
     }
-    
+
     private func makeLazyProperties(for view: IBUIView) -> [DeclarationRepresentable] {
         var properties: [DeclarationRepresentable] = []
         for child in view.subviews {
@@ -34,9 +34,9 @@ struct LazySubviewPropertySectionMaker {
 }
 
 struct LazySubviewPropertyDeclarationMaker {
-    
+
     var view: IBUIView
-    
+
     func make() -> DeclarationRepresentable {
         let closure = ClosureExpression { builder in
             let closurePropName = "view"
@@ -46,8 +46,9 @@ struct LazySubviewPropertyDeclarationMaker {
                     builder.initializingExpression(RawExpression(rawValue: view.uikitRepresentation))
                 })
             }
+            let memberExpression = RawExpression(rawValue: "translatesAutoresizingMaskIntoConstraints")
             let translatesExpression = ExplicitMemberExpression(expression: RawExpression(rawValue: closurePropName),
-                                                                member: RawExpression(rawValue: "translatesAutoresizingMaskIntoConstraints"))
+                                                                member: memberExpression)
             let translatesValue = "\(view.translatesToAutoResizeMask)"
             let returnValue = ReturnExpression(expression: RawExpression(rawValue: closurePropName))
             builder.bodyStatements([
@@ -68,6 +69,5 @@ struct LazySubviewPropertyDeclarationMaker {
             builder.expression(executed)
         }
     }
-    
-}
 
+}

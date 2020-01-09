@@ -8,22 +8,24 @@
 import Foundation
 
 public enum NibjectError: Error {
-    
+
+    // swiftlint:disable identifier_name
     public enum InterfaceBuilderParsingFailureReason {
         case ibtoolInputFailure(errorMessages: [String])
         case ibtoolFailure(underlyingError: Error)
         case deserializationFailure(underlyingError: Error)
     }
-    
+
     public enum ViewGraphBuilderFailureReason {
         case noTopLevelView
         case objectLookupFailure(underlyingError: IBUIViewError)
     }
-    
+
     case interfaceBuilderParsingError(reason: InterfaceBuilderParsingFailureReason)
     case viewGraphBuilderError(reason: ViewGraphBuilderFailureReason)
     case unknownError(underlyingError: Error)
-    
+
+    // swiftlint:enable identifier_name
     public var localizedDescription: String {
         switch self {
         case .interfaceBuilderParsingError(let reason): return reason.localizedDescription
@@ -39,7 +41,8 @@ extension NibjectError.InterfaceBuilderParsingFailureReason {
     var localizedDescription: String {
         switch self {
         case .ibtoolInputFailure(let errorMessages):
-            return "IBTool failed while reading the file with the following errors: \(errorMessages.joined(separator: ", "))"
+            let joinedMessages = errorMessages.joined(separator: ", ")
+            return "IBTool failed while reading the file with the following errors: \(joinedMessages)"
         case .ibtoolFailure(let underlyingError):
             return "IBTool failed with the following error:\n\(underlyingError.localizedDescription)"
         case .deserializationFailure(let underlyingError):
@@ -56,8 +59,10 @@ extension NibjectError.ViewGraphBuilderFailureReason {
         case .noTopLevelView:
             return "No top level view found. The .xib file must have at least one view"
         case .objectLookupFailure(let underlyingError):
+            // swiftlint:disable:next todo
             // TODO: Add issue link.
             // Add additional steps and things to include like the print out of the IBTool for the xib file
+            // swiftlint:disable:next line_length
             return "Failed to locate an expected object. This is likely bug. Please report. \(underlyingError.localizedDescription)"
         }
     }

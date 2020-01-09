@@ -1,5 +1,5 @@
-import XCTest
 @testable import NibJectKit
+import XCTest
 
 final class NameFormattingTests: XCTestCase {
     func testLowerCamelCased() {
@@ -7,13 +7,13 @@ final class NameFormattingTests: XCTestCase {
         let expected = "stringToTest"
         XCTAssertEqual(actual, expected)
     }
-    
+
     func testLowerCamelCased_withUppercaseInString() {
         let actual = "String to TEST".lowerCamelCased
         let expected = "stringToTEST"
         XCTAssertEqual(actual, expected)
     }
-    
+
     func testLowerCamelCased_withMixedCase() {
         let actual = "STRING with MiXeD cAsE".lowerCamelCased
         let expected = "sTRINGWithMiXeDCAsE"

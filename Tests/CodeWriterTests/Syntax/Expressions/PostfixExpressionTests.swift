@@ -1,8 +1,8 @@
-import XCTest
 @testable import CodeWriter
+import XCTest
 
 final class SelfExpressionTests: XCTestCase {
-    
+
     func testSelfInitializer() {
         let selfProp = SelfExpression(memberName: "prop")
         let initializer = InitializerExpression { builder in
@@ -14,7 +14,7 @@ final class SelfExpressionTests: XCTestCase {
         let expected = "self.prop = Frog(t: \"test\")"
         XCTAssertEqual(actual.outputText, expected)
     }
-    
+
     func testVariableAssignment() {
         let initializer = InitializerExpression { builder in
             builder.isExplicit(false)
@@ -28,7 +28,7 @@ final class SelfExpressionTests: XCTestCase {
         let expected = "var prop = Frog(t: \"test\")"
         XCTAssertEqual(actual.outputText, expected)
     }
-    
+
     func testLazyPropWithClosure() {
         let closure = ClosureExpression { builder in
             let propertyName = "a"

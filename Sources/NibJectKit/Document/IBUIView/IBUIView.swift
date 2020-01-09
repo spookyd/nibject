@@ -5,40 +5,43 @@
 //  Created by Luke Davis on 12/2/19.
 //
 
-import Foundation
 import CodeWriter
+import Foundation
 
 public enum IBUIViewError: Error {
+    // swiftlint:disable identifier_name
     case noTopLevelViewInHierarchy([NibHierarchy])
     case objectNotFound(objectID: Nib.ObjectID)
+    // swiftlint:enable identifier_name
 }
 
 public class IBUIView: CustomStringConvertible {
-    
+
     public let objectID: Nib.ObjectID
     /// The label that is set in the Hierarchy Plist
     public let label: String
     /// The name that is set in the HIerarchy Plist
     public let name: String
     let rawData: NibObject
-    
+
     fileprivate(set) var layoutGuide: IBLayoutGuide?
     public private(set) weak var parent: IBUIView?
     public private(set) var subviews: [IBUIView] = []
-    
+
     public private(set) var constraints: [IBLayoutConstraint] = []
-    
+
     public var uikitRepresentation: String {
         return rawData.rawClassValue.replacingOccurrences(of: "IB", with: "")
     }
-    
+
     public var translatesToAutoResizeMask: Bool {
         guard let value = rawData.content["ibExternalExplicitTranslatesAutoresizingMaskIntoConstraints"] as? Bool else {
             return constraints.isEmpty
         }
         return value
     }
-    
+
+    // swiftlint:disable:next todo
     // TODO: ibExternalUserDefinedRuntimeAttributes
     /*
      Example:
@@ -56,11 +59,11 @@ public class IBUIView: CustomStringConvertible {
              </dict>
      </array>
      */
-    
+
     public var customName: String? { rawData.content["ibExternalExplicitLabel"] as? String }
-    
+
     public var hasCustomName: Bool { customName != nil }
-    
+
     public var displayName: String {
         if let customName = self.customName { return customName }
         if name.isEmpty {
@@ -68,55 +71,55 @@ public class IBUIView: CustomStringConvertible {
         }
         return name
     }
-    
+
     var propertyName: String {
         return removeIllegalCharacters(from: displayName.lowerCamelCased)
     }
-    
+
     private func removeIllegalCharacters(from string: String) -> String {
         let validChars = Set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_")
         return string.filter({ validChars.contains($0) })
     }
-    
+
     var shouldUsePropertyName: Bool {
         return !isTopLevelView
     }
-    
+
     var isTopLevelView: Bool {
         return parent == nil
     }
-    
+
     var hasSafeArea: Bool {
         return layoutGuide != nil
     }
-    
+
     public init(label: String, name: String, nibObject: NibObject) {
         self.label = label
         self.name = name
         self.objectID = nibObject.objectID
         self.rawData = nibObject
     }
-    
+
     public func addSubview(_ subview: IBUIView) {
         subview.parent = self
         self.subviews.append(subview)
     }
-    
+
     public func addConstraints(_ constraints: [IBLayoutConstraint]) {
         self.constraints.append(contentsOf: constraints)
     }
-    
+
     func addSubviewMethodName() -> String {
         return "addSubview"
     }
-    
+
     public var description: String {
         if constraints.isEmpty {
             return "View(\(objectID))"
         }
         return "View(\(objectID)): Comnstraints -> \(constraints)"
     }
-    
+
     func printGraph() {
         let graph = IBUIViewGraph(view: self).toArray()
         for (idx, level) in graph.enumerated() {
@@ -126,33 +129,33 @@ public class IBUIView: CustomStringConvertible {
             }
         }
     }
-    
+
 }
 
 // MARK: - Search
 extension IBUIView {
-    
+
     public func findDistantRelative(for objectID: Nib.ObjectID) -> IBUIView? {
         return IBUIViewGraph(view: self).findDistantRelative(for: objectID)
     }
-    
+
 }
 
 // MARK: - Builder
 extension IBUIView {
-    
+
     public static func from(nib: Nib) throws -> IBUIView {
         var parser = IBUIViewParser()
         return try parser.parse(nib: nib)
     }
-    
+
 }
 // GOAL: Set the IBUIView name when no custom label has been set.
 // Need to maintain a map of used property names and add a numeric value after each repeated name
 struct IBUIViewParser {
-    
+
     private var propertyNames: [String: Int] = [:]
-    
+
     public mutating func parse(nib: Nib) throws -> IBUIView {
         // For now only support single view
         guard let hierarchy = nib.hierarchy.first else { throw IBUIViewError.noTopLevelViewInHierarchy(nib.hierarchy) }
@@ -160,7 +163,8 @@ struct IBUIViewParser {
         return try self.from(hierarchy: hierarchy, with: viewObjects)
     }
 
-    private mutating func from(hierarchy: NibHierarchy, with objectLookup: [Nib.ObjectID: NibObject]) throws -> IBUIView {
+    private mutating func from(hierarchy: NibHierarchy,
+                               with objectLookup: [Nib.ObjectID: NibObject]) throws -> IBUIView {
         let parent = try self.from(hierarchy: hierarchy, objectLookup: objectLookup)
         for child in hierarchy.children {
            guard let object = objectLookup[child.objectID] else {
@@ -194,7 +198,7 @@ struct IBUIViewParser {
         default: return IBUIView(label: hierarchy.label, name: name, nibObject: object)
         }
     }
-    
+
     private mutating func generateViewName(for hierarchy: NibHierarchy) -> String {
         // ASSUMPTION: When no custom label is set in the .xib then the `name` is missing from hierarchy
         var name: String

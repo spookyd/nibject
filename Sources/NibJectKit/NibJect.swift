@@ -1,5 +1,5 @@
 public struct NibJect {
-    
+
     @discardableResult
     public static func ejectNib(at inputPath: String,
                                 to outputPath: String) -> Result<GeneratedSwiftFile, NibjectError> {
@@ -22,7 +22,7 @@ public struct NibJect {
             return .failure(.unknownError(underlyingError: error))
         }
     }
-    
+
     private static func getOutputFileName(_ path: String) -> String {
         guard let fileNameWithExtension = path.components(separatedBy: "/").last else {
             return ""

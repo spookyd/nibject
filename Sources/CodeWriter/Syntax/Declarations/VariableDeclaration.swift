@@ -9,13 +9,13 @@ struct VariableSyntaxData {
 }
 
 public struct VariableDeclarationBuilder: Buildable {
-    
+
     private var data: VariableSyntaxData
-    
+
     init() {
         data = VariableSyntaxData()
     }
-    
+
     public func build(within context: WritingContext) -> String {
         var output = ""
         if data.accessLevel != .default {
@@ -33,36 +33,36 @@ public struct VariableDeclarationBuilder: Buildable {
         }
         return output
     }
-    
+
     public mutating func setName(_ name: String) {
         data.name = name
     }
-    
+
     public mutating func isLazy(_ isLazy: Bool) {
         data.isLazy = isLazy
     }
-    
+
     public mutating func accessLevel(_ accessLevel: AccessLevel) {
         data.accessLevel = accessLevel
     }
-    
+
     public mutating func explicitType(_ inheritedType: String?) {
         data.explicitType = inheritedType
     }
-    
+
     public mutating func expression(_ expressionConvertable: ExpressionRepresentable) {
         data.expression = expressionConvertable
     }
 }
 
 public struct VariableDeclaration: DeclarationRepresentable {
-    
+
     public private(set) var outputText: String
-    
+
     internal init(_ output: String) {
         self.outputText = output
     }
-    
+
     public init(_ build: (inout VariableDeclarationBuilder) -> Void) {
         var builder = VariableDeclarationBuilder()
         build(&builder)

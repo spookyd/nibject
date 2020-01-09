@@ -4,7 +4,7 @@ struct FunctionCallSyntaxData {
     struct Argument {
         var name: String?
         var value: String
-        
+
         var outputText: String {
             guard let name = self.name else {
                 return "\(value)"
@@ -17,13 +17,13 @@ struct FunctionCallSyntaxData {
 }
 
 public struct FunctionCallExpressionBuilder: Buildable {
-    
+
     private var data: FunctionCallSyntaxData
-    
+
     init() {
         data = FunctionCallSyntaxData()
     }
-    
+
     public func build(within context: WritingContext) -> String {
         var output = "\(data.functionName)"
         output += "("
@@ -31,28 +31,28 @@ public struct FunctionCallExpressionBuilder: Buildable {
         output += ")"
         return output
     }
-    
+
     public mutating func functionName(_ name: String) {
         data.functionName = name
     }
-    
+
     public mutating func addArgument(name: String? = .none, value: String) {
         data.arguments.append(FunctionCallSyntaxData.Argument(name: name, value: value))
     }
-    
+
 }
 
 /**
  function name(argument name 1: argument value 1, argument name 2: argument value 2)
  */
 public struct FunctionCallExpression: ExpressionRepresentable {
-    
+
     public private(set) var outputText: String
-    
+
     internal init(_ output: String) {
         self.outputText = output
     }
-    
+
     public init(_ build: (inout FunctionCallExpressionBuilder) -> Void) {
         var builder = FunctionCallExpressionBuilder()
         build(&builder)
@@ -65,7 +65,7 @@ struct InitializerSyntaxData {
     struct Argument {
         var name: String?
         var value: String
-        
+
         var outputText: String {
             guard let name = self.name else {
                 return "\(value)"
@@ -79,13 +79,13 @@ struct InitializerSyntaxData {
 }
 
 public struct InitializerExpressionBuilder: Buildable {
-    
+
     private var data: InitializerSyntaxData
-    
+
     init() {
         data = InitializerSyntaxData()
     }
-    
+
     public func build(within context: WritingContext) -> String {
         var output = ""
         if let expression = data.expression {
@@ -99,39 +99,39 @@ public struct InitializerExpressionBuilder: Buildable {
         output += ")"
         return output
     }
-    
+
     public mutating func initializingExpression(_ expression: ExpressionRepresentable?) {
         data.expression = expression
     }
-    
+
     public mutating func isExplicit(_ isExplicit: Bool) {
         data.isExplicit = isExplicit
     }
-    
+
     public mutating func addArgument(name: String? = .none, value: String) {
         data.arguments.append(InitializerSyntaxData.Argument(name: name, value: value))
     }
-    
+
 }
 
 /**
  expression.init(initializer arguments)
  */
 public struct InitializerExpression: ExpressionRepresentable {
-    
+
     public private(set) var outputText: String
-    
+
     internal init(_ output: String) {
         self.outputText = output
     }
-    
+
     public init(_ build: (inout InitializerExpressionBuilder) -> Void) {
         var builder = InitializerExpressionBuilder()
         build(&builder)
         let syntax = builder.build(within: WritingContext())
         self.init(syntax)
     }
-    
+
 }
 
 /**
@@ -139,9 +139,9 @@ public struct InitializerExpression: ExpressionRepresentable {
  */
 public struct ExplicitMemberExpression: ExpressionRepresentable {
     public private(set) var outputText: String
-    
+
     public init(expression: ExpressionRepresentable, member: ExpressionRepresentable) {
         outputText = "\(expression.outputText).\(member.outputText)"
     }
-    
+
 }

@@ -8,7 +8,7 @@
 import Foundation
 
 extension StringProtocol {
-    
+
     func capitalizingFirstLetter() -> String {
         return prefix(1).uppercased() + dropFirst()
     }
@@ -19,7 +19,7 @@ extension StringProtocol {
             .map { return $0.capitalizingFirstLetter() }
             .joined()
     }
-    
+
     var lowerCamelCased: String {
         let upperCased = self.upperCamelCased
         return upperCased.prefix(1).lowercased() + upperCased.dropFirst()

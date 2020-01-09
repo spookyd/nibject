@@ -5,11 +5,11 @@
 //  Created by Luke Davis on 11/30/19.
 //
 
-import XCTest
 @testable import NibJectKit
+import XCTest
 
 final class NibHierarchyTests: XCTestCase {
-    
+
     func testFrom() {
         let expected: [Any] = [
             ["label": "File's Owner", "object-id": "-1"],
@@ -27,7 +27,7 @@ final class NibHierarchyTests: XCTestCase {
             XCTFail("Expected to be successful")
         }
     }
-    
+
     func testFrom_nestedChildren() throws {
         let expected: [Any] = [
             ["label": "View", "object-id": "iN0-l3-epB", "children":
@@ -53,7 +53,7 @@ final class NibHierarchyTests: XCTestCase {
             XCTFail("Expected to be successful")
         }
     }
-    
+
     func testFrom_missingView() {
         let expected: [Any] = [
             ["label": "File's Owner", "object-id": "-1"],
@@ -71,7 +71,7 @@ final class NibHierarchyTests: XCTestCase {
             XCTFail("Expected to fail")
         }
     }
-    
+
     func testFind() throws {
         let targetID = UUID().uuidString
         let grandChild = NibHierarchy(objectID: targetID, label: "", name: "", children: [])
@@ -82,7 +82,7 @@ final class NibHierarchyTests: XCTestCase {
         let actual = try XCTUnwrap(parent.find(targetID))
         XCTAssertEqual(actual, grandChild)
     }
-    
+
     func testFind_missingObjectID() throws {
         let grandChild = NibHierarchy(objectID: UUID().uuidString, label: "", name: "", children: [])
         let child1 = NibHierarchy(objectID: UUID().uuidString, label: "", name: "", children: [])

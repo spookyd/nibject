@@ -5,11 +5,11 @@
 //  Created by Luke Davis on 12/16/19.
 //
 
-import XCTest
 @testable import NibJectKit
+import XCTest
 
 final class IBUIViewTests: XCTestCase {
-    
+
     func testFrom() throws {
         let topUUID = UUID().uuidString
         let child1UUID = UUID().uuidString
@@ -37,7 +37,7 @@ final class IBUIViewTests: XCTestCase {
         let actual3 = try XCTUnwrap(actual2.subviews.first)
         XCTAssertEqual(actual3.parent?.objectID, actual2.objectID)
     }
-    
+
     func testFromWithConstraints() throws {
         let topUUID = UUID().uuidString
         let child1UUID = UUID().uuidString

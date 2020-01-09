@@ -24,7 +24,6 @@ public struct IBLayoutConstraint {
 
     }
 
-
     // Anchor types
     // 0 = none
     // 1 = Left Anchor
@@ -74,6 +73,7 @@ public struct IBLayoutConstraint {
 
         var isLayoutDimension: Bool { self == .width || self == .height }
 
+        // swiftlint:disable:next cyclomatic_complexity
         func generateAnchor() -> String {
             let anchorString: String
             switch self {
@@ -110,13 +110,13 @@ public struct IBLayoutConstraint {
     public var constant: Float
     public var priority: Int
     public var multiplier: Float
-    
+
     public static func from(nib: Nib) -> [IBLayoutConstraint] {
         return nib.objects
             .filter({ $0.value.classType == .layoutConstraint })
             .map({ IBLayoutConstraint.make(for: $0.value) })
     }
-    
+
     public static func make(for object: NibObject) -> IBLayoutConstraint {
         return NibConstraintParser(object: object).parse()
     }
@@ -215,6 +215,5 @@ private struct NibConstraintParser {
         }
         return value
     }
-    
 
 }

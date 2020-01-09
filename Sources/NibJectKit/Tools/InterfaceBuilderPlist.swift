@@ -25,7 +25,7 @@ public struct InterfaceBuilderPlist {
     public var connections: [AnyHashable: Any]
     public var hierarchy: [Any]
     public var objects: [AnyHashable: Any]
-    
+
 }
 
 public extension InterfaceBuilderPlist {
@@ -39,13 +39,16 @@ public extension InterfaceBuilderPlist {
 }
 
 extension InterfaceBuilderPlist {
-    
+
     public static func from(_ filePath: String,
                             using ibTool: IBTool = IBTool()) -> Result<InterfaceBuilderPlist, NibjectError> {
         switch ibTool.run(filePath, [.classes, .connections, .hierarchy, .objects]) {
         case .success(let data):
             do {
-                guard let dictionary = try PropertyListSerialization.propertyList(from: data, options: .mutableContainers, format: .none) as? [AnyHashable: Any] else {
+                let deserializedPlist = try PropertyListSerialization.propertyList(from: data,
+                                                                                   options: .mutableContainers,
+                                                                                   format: .none)
+                guard let dictionary = deserializedPlist as? [AnyHashable: Any] else {
                     fatalError("Invalid casting. Run `ibtool` to see if the format output has changed.")
                 }
                 let classes = dictionary[CodingKeys.classes.stringValue] as? [AnyHashable: Any] ?? [:]
@@ -71,4 +74,3 @@ extension InterfaceBuilderPlist {
         }
     }
 }
-

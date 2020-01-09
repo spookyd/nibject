@@ -5,11 +5,11 @@
 //  Created by Luke Davis on 11/30/19.
 //
 
-import XCTest
 @testable import NibJectKit
+import XCTest
 
 final class NibObjectTests: XCTestCase {
-    
+
     func testFrom() {
         let objectID = UUID().uuidString
         let expected: [AnyHashable: Any] = ["class": "IBUIView"]
@@ -22,7 +22,7 @@ final class NibObjectTests: XCTestCase {
             XCTFail("Expected to be successful")
         }
     }
-    
+
     func testFrom_ViewType() throws {
         let expected: [AnyHashable: Any] = ["class": "IBUI\(UUID().uuidString)"]
         let result = NibObject.from("0gL-9z-1oC", and: expected)
@@ -33,7 +33,7 @@ final class NibObjectTests: XCTestCase {
             XCTFail("Expected to be successful")
         }
     }
-    
+
     func testFrom_layoutGuideType() throws {
         let expected: [AnyHashable: Any] = ["class": "IBUIViewAutolayoutGuide"]
         let result = NibObject.from("0gL-9z-1oC", and: expected)
@@ -44,7 +44,7 @@ final class NibObjectTests: XCTestCase {
             XCTFail("Expected to be successful")
         }
     }
-    
+
     func testFrom_layoutConstraintType() throws {
         let expected: [AnyHashable: Any] = ["class": "IBLayoutConstraint"]
         let result = NibObject.from("0gL-9z-1oC", and: expected)
@@ -55,7 +55,7 @@ final class NibObjectTests: XCTestCase {
             XCTFail("Expected to be successful")
         }
     }
-    
+
     func testFrom_unknownType() throws {
         let expected: [AnyHashable: Any] = ["class": UUID().uuidString]
         let result = NibObject.from("0gL-9z-1oC", and: expected)
@@ -66,7 +66,7 @@ final class NibObjectTests: XCTestCase {
             XCTFail("Expected to be successful")
         }
     }
-    
+
     func testFrom_missingClassType() {
         let objectID = UUID().uuidString
         let expected: [AnyHashable: Any] = [:]

@@ -1,0 +1,45 @@
+included:
+    - Sources
+    - Tests
+excluded:
+    - Tests/Resources
+analyzer_rules:
+    - unused_declaration
+    - unused_import
+opt_in_rules:
+    - empty_count
+    - explicit_init
+    - closure_spacing
+    - overridden_super_call
+    - redundant_nil_coalescing
+    - private_outlet
+    - nimble_operator
+    - attributes
+    - operator_usage_whitespace
+    - closure_end_indentation
+    - first_where
+    - sorted_imports
+    - object_literal
+    - number_separator
+    - prohibited_super_call
+    - fatal_error_message
+    - vertical_parameter_alignment_on_call
+
+identifier_name:
+    excluded:
+        - id
+        - ID
+
+line_length:
+  warning: 120
+  ignores_comments: true
+  ignores_function_declarations: true
+
+file_length:
+  ignore_comment_only_lines: true
+
+file_header:
+  required_pattern: ''
+
+number_separator:
+    minimum_length: 5

@@ -9,14 +9,14 @@ import CodeWriter
 import Foundation
 
 struct ViewLayoutSectionMaker {
-    
+
     var rootView: IBUIView
-    
-    func make() -> DeclarationRepresentable {
+
+    func make() throws -> DeclarationRepresentable {
         let graph = IBUIViewGraph(view: rootView)
-        return JoinedDeclarationExpression(try! makeLayoutSection(for: graph))
+        return JoinedDeclarationExpression(try makeLayoutSection(for: graph))
     }
-    
+
     private func makeLayoutSection(for viewGraph: IBUIViewGraph) throws -> [DeclarationRepresentable] {
         var properties: [DeclarationRepresentable] = []
         for view in viewGraph.flattenHierarchy() {
@@ -29,9 +29,9 @@ struct ViewLayoutSectionMaker {
 }
 
 private struct ViewLayoutMethodMaker {
-    
+
     var view: IBUIView
-    
+
     func make() throws -> DeclarationRepresentable {
         let constraints = try ConstraintFunctionCallSectionMaker(view: view).make()
         let function = FunctionDeclaration { builder in
@@ -42,13 +42,13 @@ private struct ViewLayoutMethodMaker {
         }
         return function
     }
-    
+
 }
 
 private struct ConstraintFunctionCallSectionMaker {
-    
+
     var view: IBUIView
-    
+
     func make() throws -> [StatementRepresentable] {
         var statements: [StatementRepresentable] = []
         var constraintNameAssignment: [String: Int] = [:]
@@ -67,13 +67,14 @@ private struct ConstraintFunctionCallSectionMaker {
             }
             return $0
         }).sorted(by: { $0 < $1 })
+        // swiftlint:disable:next todo
         // TODO: Clean this up. Need to add array expression
         let returnStatement = ReturnExpression(expression:
             RawExpression(rawValue: "[\n    \(properties.joined(separator: ",\n    "))\n]"))
         statements.append(returnStatement)
         return statements
     }
-    
+
     private func relativeLookup(for view: IBUIView) -> ConstraintFunctionCallExpressionMaker.ViewLocator {
         return { firstID, secondID in
             guard let firstItem = view.findDistantRelative(for: firstID) else {
@@ -86,9 +87,12 @@ private struct ConstraintFunctionCallSectionMaker {
             return (firstItem, secondItem)
         }
     }
-    
+
     private func makePropertyName(for constraint: IBLayoutConstraint, assignedNames: inout [String: Int]) -> String {
-        let name = constraint.firstAnchor.generateAnchor().replacingOccurrences(of: "Anchor", with: "").replacingOccurrences(of: ".", with: "")
+        let name = constraint.firstAnchor
+            .generateAnchor()
+            .replacingOccurrences(of: "Anchor", with: "")
+            .replacingOccurrences(of: ".", with: "")
         if var count = assignedNames[name] {
             count += 1
             assignedNames[name] = count
@@ -106,7 +110,7 @@ struct ConstraintFunctionCallExpressionMaker {
     init(constraint: IBLayoutConstraint) {
         self.constraint = constraint
     }
-    
+
     func make(using viewLocator: ViewLocator) rethrows -> ExpressionRepresentable {
         let locatedViews = try viewLocator(constraint.firstItemID, constraint.secondItemID)
         let firstExpression = makeItemMemberExpression(for: locatedViews.0, and: constraint.firstAnchor)
@@ -114,7 +118,7 @@ struct ConstraintFunctionCallExpressionMaker {
             builder.functionName("constraint")
             guard let secondView = locatedViews.1 else {
                 builder.addArgument(name: "\(constraint.relation.generateRelation())Constant",
-                    value: "\(constraint.constant)")
+                                    value: "\(constraint.constant)")
                 return
             }
             let secondExpression = makeItemMemberExpression(for: secondView, and: constraint.secondAnchor)
@@ -128,7 +132,7 @@ struct ConstraintFunctionCallExpressionMaker {
         }
         return ExplicitMemberExpression(expression: firstExpression, member: funcCallEpression)
     }
-    
+
     private func makeItemMemberExpression(for item: IBUIView,
                                           and anchor: IBLayoutConstraint.Anchor) -> ExpressionRepresentable {
         let memberExpression = RawExpression(rawValue: anchor.generateAnchor())
@@ -137,16 +141,15 @@ struct ConstraintFunctionCallExpressionMaker {
         }
         return ExplicitMemberExpression(expression: expression, member: memberExpression)
     }
-    
+
     private func makeSafeAreaLayoutMemberExpression(for item: IBUIView) -> ExpressionRepresentable? {
         let safeAreaExpression = RawExpression(rawValue: "safeAreaLayoutGuide")
         guard item.shouldUsePropertyName else {
-            if item.hasSafeArea { return safeAreaExpression }
-            else { return .none }
+            if item.hasSafeArea { return safeAreaExpression } else { return .none }
         }
         let propertyNameExpression = RawExpression(rawValue: item.propertyName)
         guard item.hasSafeArea else { return propertyNameExpression }
         return ExplicitMemberExpression(expression: propertyNameExpression, member: safeAreaExpression)
     }
-    
+
 }

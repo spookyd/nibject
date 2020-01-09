@@ -10,11 +10,11 @@ import Foundation
 /// Will take a flattened view hierarchy and assign the constraints to the correct views
 class ConstraintBuilder {
     let flattendView: [IBUIView]
-    
+
     init(flattendView: [IBUIView]) {
         self.flattendView = flattendView
     }
-    
+
     func assign(constraints: [IBLayoutConstraint]) {
         var usedConstraints: [Nib.ObjectID] = []
         for view in flattendView.reversed() {
@@ -28,5 +28,5 @@ class ConstraintBuilder {
             usedConstraints.append(contentsOf: matchedConstraints.map({ $0.objectID }))
         }
     }
-    
+
 }

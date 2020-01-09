@@ -8,18 +8,18 @@
 import Foundation
 
 class IBUIViewGraph {
-    
+
     private var view: IBUIView
     init(view: IBUIView) {
         self.view = view
     }
-    
+
     func toArray() -> [[IBUIView]] {
         var array: [[IBUIView]] = [[view]]
         flattenChildren(of: view, into: &array)
         return array
     }
-      
+
     private func flattenChildren(of node: IBUIView, into array: inout [[IBUIView]]) {
         array.append(node.subviews)
         for child in node.subviews {
@@ -27,15 +27,15 @@ class IBUIViewGraph {
             flattenChildren(of: child, into: &array)
         }
     }
-    
+
     func flattenHierarchy() -> [IBUIView] {
         return toArray().flatMap({ $0 })
     }
-    
+
     public func findDistantRelative(for objectID: Nib.ObjectID) -> IBUIView? {
         return searchRelatives(for: objectID, startingAt: self.view)
     }
-    
+
     private func searchRelatives(for objectID: Nib.ObjectID, startingAt node: IBUIView) -> IBUIView? {
         if node.objectID == objectID { return node }
         guard let parent = node.parent else { return .none }
@@ -43,7 +43,7 @@ class IBUIViewGraph {
         if parent.hasSafeArea && parent.layoutGuide?.objectID == objectID { return parent }
         return searchRelatives(for: objectID, startingID: node.objectID, in: parent)
     }
-    
+
     private func searchRelatives(for objectID: Nib.ObjectID, startingID: Nib.ObjectID, in node: IBUIView) -> IBUIView? {
         if node.objectID == objectID { return node }
         for child in node.subviews {
@@ -58,7 +58,7 @@ class IBUIViewGraph {
         if parent.hasSafeArea && parent.layoutGuide?.objectID == objectID { return parent }
         return searchRelatives(for: objectID, startingID: startingID, in: parent)
     }
-    
+
     private func findView(with objectID: Nib.ObjectID, in node: IBUIView) -> IBUIView? {
         if node.objectID == objectID { return node }
         for child in node.subviews {

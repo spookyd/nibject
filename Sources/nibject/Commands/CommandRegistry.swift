@@ -25,7 +25,7 @@ struct CommandRegistry {
     private var options = NibjectOptions()
     private var mainCommand: Command? = .none
     private var commands: [Command] = []
-    
+
     init(usage: String, overview: String) {
         self.parser = ArgumentParser(usage: usage, overview: overview)
         self.optionBinder = ArgumentBinder<NibjectOptions>()
@@ -34,7 +34,7 @@ struct CommandRegistry {
     mutating func register(command: Command.Type) {
         commands.append(command.init(parser: parser, optionsBinder: optionBinder))
     }
-    
+
     mutating func main(_ command: Command.Type) {
         mainCommand = command.init(parser: parser, optionsBinder: optionBinder)
     }
@@ -73,7 +73,7 @@ struct CommandRegistry {
         }
         try run(command: command, with: arguments)
     }
-    
+
     private mutating func run(command: Command, with arguments: ArgumentParser.Result) throws {
         var options = NibjectOptions()
         try optionBinder.fill(parseResult: arguments, into: &options)

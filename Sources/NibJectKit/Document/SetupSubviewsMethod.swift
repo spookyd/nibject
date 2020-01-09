@@ -5,14 +5,14 @@
 //  Created by Luke Davis on 12/14/19.
 //
 
-import Foundation
 import CodeWriter
+import Foundation
 
 struct SetupSubviewsMethod {
-    
+
     private let constraintsExpression = RawExpression(rawValue: "constraints")
     let rootView: IBUIView
-    
+
     func make() -> DeclarationRepresentable {
         return FunctionDeclaration { builder in
             builder.accessLevel(.private)
@@ -20,10 +20,11 @@ struct SetupSubviewsMethod {
             builder.statements(makeFunctionBody())
         }
     }
-    
+
     private func makeFunctionBody() -> [StatementRepresentable] {
         var body: [StatementRepresentable] = []
         body.append(contentsOf: makeAddSubviewCalls())
+        // swiftlint:disable:next todo
         // FIXME: Fix shortcut
         body.append(RawExpression(rawValue: "var \(constraintsExpression.outputText): [NSLayoutConstraint] = []"))
         body.append(contentsOf: makeLayoutSubviewCalls())
@@ -35,11 +36,11 @@ struct SetupSubviewsMethod {
                                              member: activateFunction))
         return body
     }
-    
+
     private func makeAddSubviewCalls() -> [StatementRepresentable] {
         return makeAddSubviewCall(for: rootView)
     }
-    
+
     private func makeAddSubviewCall(for view: IBUIView) -> [StatementRepresentable] {
         var calls: [StatementRepresentable] = []
         for child in view.subviews {
@@ -49,11 +50,11 @@ struct SetupSubviewsMethod {
         }
         return calls
     }
-    
+
     private func makeLayoutSubviewCalls() -> [StatementRepresentable] {
         return makeLayoutSubviewCall(for: rootView)
     }
-    
+
     private func makeLayoutSubviewCall(for view: IBUIView) -> [StatementRepresentable] {
         var calls: [StatementRepresentable] = []
         for child in view.subviews {
@@ -69,7 +70,7 @@ struct SetupSubviewsMethod {
         }
         return calls
     }
-    
+
 }
 
 private extension IBUIView {
@@ -85,7 +86,7 @@ private extension IBUIView {
         return ExplicitMemberExpression(expression: RawExpression(rawValue: parent.propertyName),
                                         member: functionCall)
     }
-    
+
     func makeLayoutMethodCall() -> ExpressionRepresentable {
         return FunctionCallExpression { builder in
             builder.functionName("layout\(propertyName.upperCamelCased)")

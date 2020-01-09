@@ -4,7 +4,8 @@ public protocol DeclarationRepresentable: StatementRepresentable {}
 
 extension DeclarationRepresentable {
     public func build(within context: WritingContext) -> String {
-        return outputText.replacingOccurrences(of: Syntax.newline, with: "\(Syntax.newline)\(context.outputIndentation)")
+        return outputText.replacingOccurrences(of: Syntax.newline,
+                                               with: "\(Syntax.newline)\(context.outputIndentation)")
     }
 }
 
@@ -14,4 +15,3 @@ public struct RawDeclaration: DeclarationRepresentable {
         self.outputText = rawValue
     }
 }
-

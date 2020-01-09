@@ -7,7 +7,7 @@ public enum AccessLevel: CustomStringConvertible {
     case `private`
     case `fileprivate`
     case `default`
-    
+
     public var description: String {
         switch self {
         case .open: return "opem"
@@ -19,4 +19,3 @@ public enum AccessLevel: CustomStringConvertible {
         }
     }
 }
-
