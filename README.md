@@ -59,6 +59,12 @@ To specify an output path use the `--output`, or `-o`, option.
 
 ## How to install
 
+Run `make install`
+
+## How to uninstall
+
+Run `make uninstall`
+
 ## Limitations
 
   1. No Storyboard support
