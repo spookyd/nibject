@@ -69,6 +69,10 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "--input=Tests/Resources/NoSubviewsView.xib"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "Tests/Resources/NoSubviewsView.xib"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
