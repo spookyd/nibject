@@ -48,15 +48,17 @@ public extension GeneratedSwiftFile {
                     builder.accessLevel(accessLevel)
                     builder.setIdentifier(fileName)
                     builder.inherits(from: "UIView")
-                    builder.containsDeclarations([
-                        RawDeclaration.newline,
-                        // Mark
-                        SingleLineCommentDeclaration.mark("Child Views"),
-                        RawDeclaration.newline,
-                        // [View properties]
-                        LazySubviewPropertySectionMaker(rootView: view).make(),
+                    builder.body({ builder in
+                        builder.add(RawDeclaration.newline)
+                        if !view.subviews.isEmpty {
+                            // Mark
+                            builder.add(SingleLineCommentDeclaration.mark("Child Views"))
+                            builder.add(RawDeclaration.newline)
+                            // [View properties]
+                            builder.add(LazySubviewPropertySectionMaker(rootView: view).make())
+                        }
                         // Initializers
-                        InitailizerDeclaration({ builder in
+                        builder.add(InitailizerDeclaration({ builder in
                             builder.accessLevel(accessLevel)
                             builder.statements([
                                 SuperExpression(memberName: "init(frame: .zero)"),
@@ -64,8 +66,8 @@ public extension GeneratedSwiftFile {
                                     builder.functionName("setupSubviews")
                                 })
                             ])
-                        }),
-                        InitailizerDeclaration({ builder in
+                        }))
+                        builder.add(InitailizerDeclaration({ builder in
                             builder.accessLevel(accessLevel)
                             builder.isRequired(true)
                             builder.isOptional(true)
@@ -73,15 +75,20 @@ public extension GeneratedSwiftFile {
                             builder.statements([
                                 RawExpression(rawValue: "fatalError(\"init(coder:) has not been implemented\")")
                             ])
-                        }),
-                        // Mark
-                        SingleLineCommentDeclaration.mark("Layout"),
-                        RawDeclaration.newline,
-                        // setup subviews
-                        SetupSubviewsMethod(rootView: view).make(),
-                        // [Layout functions]
-                        ViewLayoutSectionMaker(rootView: view).make()
-                    ])
+                        }))
+                        if !view.subviews.isEmpty {
+                            // Mark
+                            builder.add(SingleLineCommentDeclaration.mark("Layout"))
+                            builder.add(RawDeclaration.newline)
+                            // setup subviews
+                            builder.add(SetupSubviewsMethod(rootView: view).make())
+                            // [Layout functions]
+                            let subviewLayoutSection = ViewLayoutSectionMaker(rootView: view).make()
+                            if !subviewLayoutSection.outputText.isEmpty {
+                                builder.add(subviewLayoutSection)
+                            }
+                        }
+                    })
                 })
             ])
         }

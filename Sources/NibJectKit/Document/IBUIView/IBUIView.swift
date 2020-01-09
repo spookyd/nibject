@@ -22,7 +22,7 @@ public class IBUIView: CustomStringConvertible {
     public let name: String
     let rawData: NibObject
     
-    private(set) var layoutGuide: IBLayoutGuide?
+    fileprivate(set) var layoutGuide: IBLayoutGuide?
     public private(set) weak var parent: IBUIView?
     public private(set) var subviews: [IBUIView] = []
     
@@ -142,48 +142,72 @@ extension IBUIView {
 extension IBUIView {
     
     public static func from(nib: Nib) throws -> IBUIView {
+        var parser = IBUIViewParser()
+        return try parser.parse(nib: nib)
+    }
+    
+}
+// GOAL: Set the IBUIView name when no custom label has been set.
+// Need to maintain a map of used property names and add a numeric value after each repeated name
+struct IBUIViewParser {
+    
+    private var propertyNames: [String: Int] = [:]
+    
+    public mutating func parse(nib: Nib) throws -> IBUIView {
         // For now only support single view
         guard let hierarchy = nib.hierarchy.first else { throw IBUIViewError.noTopLevelViewInHierarchy(nib.hierarchy) }
         let viewObjects = nib.objects.filter({ $0.value.classType == .view || $0.value.classType == .layoutGuide })
         return try self.from(hierarchy: hierarchy, with: viewObjects)
     }
-    
-    private static func from(hierarchy: NibHierarchy, with objectLookup: [Nib.ObjectID: NibObject]) throws -> IBUIView {
+
+    private mutating func from(hierarchy: NibHierarchy, with objectLookup: [Nib.ObjectID: NibObject]) throws -> IBUIView {
         let parent = try self.from(hierarchy: hierarchy, objectLookup: objectLookup)
         for child in hierarchy.children {
-            guard let object = objectLookup[child.objectID] else {
-                continue
-            }
-            if object.classType == .layoutGuide {
-                let safeArea = IBLayoutGuide(objectID: object.objectID, name: child.name)
-                parent.layoutGuide = safeArea
-                // Do not add safe area as a child
-                continue
-            }
-            let childView: IBUIView
-            if child.children.isEmpty {
-                childView = try self.from(hierarchy: child, objectLookup: objectLookup)
-            } else {
-                childView = try self.from(hierarchy: child, with: objectLookup)
-            }
-            parent.addSubview(childView)
+           guard let object = objectLookup[child.objectID] else {
+               continue
+           }
+           if object.classType == .layoutGuide {
+               let safeArea = IBLayoutGuide(objectID: object.objectID, name: child.name)
+               parent.layoutGuide = safeArea
+               // Do not add safe area as a child
+               continue
+           }
+           let childView: IBUIView
+           if child.children.isEmpty {
+               childView = try self.from(hierarchy: child, objectLookup: objectLookup)
+           } else {
+               childView = try self.from(hierarchy: child, with: objectLookup)
+           }
+           parent.addSubview(childView)
         }
         return parent
     }
-    
-    private static func from(hierarchy: NibHierarchy, objectLookup: [Nib.ObjectID: NibObject]) throws -> IBUIView {
+
+    private mutating func from(hierarchy: NibHierarchy, objectLookup: [Nib.ObjectID: NibObject]) throws -> IBUIView {
         guard let object = objectLookup[hierarchy.objectID] else {
-            // TODO: report to diagnostics
-            throw IBUIViewError.objectNotFound(objectID: hierarchy.objectID)
+           throw IBUIViewError.objectNotFound(objectID: hierarchy.objectID)
         }
-        // TODO: Get `ibExternalExplicitTranslatesAutoresizingMaskIntoConstraints` for checking translates to auto resize
-        // TODO: Get `ibExternalExplicitLabel`
+        let name = generateViewName(for: hierarchy)
         switch object.rawClassValue {
-        case "IBUIStackView": return IBUIStackView(label: hierarchy.label, name: hierarchy.name, nibObject: object)
-        case "IBUIButton": return IBUIButton(label: hierarchy.label, name: hierarchy.name, nibObject: object)
-        default: return IBUIView(label: hierarchy.label, name: hierarchy.name, nibObject: object)
+        case "IBUIStackView": return IBUIStackView(label: hierarchy.label, name: name, nibObject: object)
+        case "IBUIButton": return IBUIButton(label: hierarchy.label, name: name, nibObject: object)
+        default: return IBUIView(label: hierarchy.label, name: name, nibObject: object)
         }
     }
     
+    private mutating func generateViewName(for hierarchy: NibHierarchy) -> String {
+        // ASSUMPTION: When no custom label is set in the .xib then the `name` is missing from hierarchy
+        var name: String
+        if hierarchy.name.isEmpty {
+            name = hierarchy.label
+        } else {
+            name = hierarchy.name
+        }
+        let nameCount = propertyNames[name, default: 0]
+        propertyNames[name] = nameCount + 1
+        if nameCount > 0 {
+            name = "\(name)\(nameCount)"
+        }
+        return name
+    }
 }
-
