@@ -12,7 +12,6 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/apple/swift-tools-support-core.git", from: "0.0.1"),
         .package(url: "https://github.com/JohnSundell/Files", from: "4.0.0"),
-        .package(path: "../CodeWriter")
     ],
     targets: [
         .target(name: "nibject",
@@ -23,5 +22,11 @@ let package = Package(
         .testTarget(
             name: "NibJectKitTests",
             dependencies: ["NibJectKit", "Files"]),
+        .target(
+            name: "CodeWriter",
+            dependencies: []),
+        .testTarget(
+            name: "CodeWriterTests",
+            dependencies: ["CodeWriter"]),
     ]
 )
