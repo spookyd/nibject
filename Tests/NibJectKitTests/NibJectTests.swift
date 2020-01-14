@@ -68,6 +68,13 @@ final class NibJectTests: XCTestCase {
         XCTAssertEqual(actual, expected)
     }
 
+    func testAdditionalConstraintHandlingView() throws {
+        let fileName = "AdditionalConstraintHandlingView"
+        let expected = removeMetaCharaters(from: try loadExpectedOutput(fileName))
+        let actual = removeMetaCharaters(from: try runNibject(for: fileName))
+        XCTAssertEqual(actual, expected)
+    }
+
     // MARK: - Utilities
     private func loadExpectedOutput(_ fileName: String) throws -> String {
         return try File(path: URL.resources.appendingPathComponent("\(fileName).swift").path).readAsString()

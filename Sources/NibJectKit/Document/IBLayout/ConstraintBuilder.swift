@@ -21,6 +21,7 @@ class ConstraintBuilder {
             if usedConstraints.count == constraints.count { return }
             let matchedConstraints = constraints.filter({
                 !usedConstraints.contains($0.objectID)
+                    && !$0.isPlaceholder
                     && ($0.firstItemID == view.objectID || $0.secondItemID == view.objectID)
             })
             if matchedConstraints.isEmpty { continue }

@@ -55,11 +55,20 @@ private struct ConstraintFunctionCallSectionMaker {
         for constraint in view.constraints.sorted(by: { $0.firstAnchor.rawValue < $1.firstAnchor.rawValue }) {
             let maker = ConstraintFunctionCallExpressionMaker(constraint: constraint)
             let statement = try maker.make(using: relativeLookup(for: view))
+            let propertyName = makePropertyName(for: constraint, assignedNames: &constraintNameAssignment)
             let propertyAssignment = ConstantDeclaration { builder in
-                builder.setName(makePropertyName(for: constraint, assignedNames: &constraintNameAssignment))
+                builder.setName(propertyName)
                 builder.expression(statement)
             }
             statements.append(propertyAssignment)
+            if !isDefaultPriority(constraint.priority) {
+                let prop = RawExpression(rawValue: propertyName)
+                let value = makePriorityExpression(constraint.priority)
+                let propertyExpression = ExplicitMemberExpression(expression: prop,
+                                                                  member: RawExpression(rawValue: "priority"))
+                let assignmentExpression = AssignmentOperatorExpression(expression: propertyExpression, value: value)
+                statements.append(assignmentExpression)
+            }
         }
         let properties: [String] = constraintNameAssignment.map({
             if $1 > 1 {
@@ -89,10 +98,15 @@ private struct ConstraintFunctionCallSectionMaker {
     }
 
     private func makePropertyName(for constraint: IBLayoutConstraint, assignedNames: inout [String: Int]) -> String {
-        let name = constraint.firstAnchor
-            .generateAnchor()
-            .replacingOccurrences(of: "Anchor", with: "")
-            .replacingOccurrences(of: ".", with: "")
+        var name: String
+        if let customName = constraint.customName {
+            name = customName.lowerCamelCased
+        } else {
+            name = constraint.firstAnchor
+                .generateAnchor()
+                .replacingOccurrences(of: "Anchor", with: "")
+                .replacingOccurrences(of: ".", with: "")
+        }
         if var count = assignedNames[name] {
             count += 1
             assignedNames[name] = count
@@ -100,6 +114,27 @@ private struct ConstraintFunctionCallSectionMaker {
         } else {
             assignedNames[name] = 1
             return name
+        }
+    }
+
+    private func isDefaultPriority(_ value: Int) -> Bool { value == 1000 }
+
+    private func makePriorityExpression(_ value: Int) -> ExpressionRepresentable {
+        let layoutExpression = RawExpression(rawValue: "UILayoutPriority")
+        switch value {
+        case 1000:
+            return ExplicitMemberExpression(expression: layoutExpression, member: RawExpression(rawValue: "required"))
+        case 750:
+            return ExplicitMemberExpression(expression: layoutExpression,
+                                            member: RawExpression(rawValue: "defaultHigh"))
+        case 250:
+            return ExplicitMemberExpression(expression: layoutExpression,
+                                            member: RawExpression(rawValue: "defaultLow"))
+        default:
+            return InitializerExpression { builder in
+                builder.initializingExpression(layoutExpression)
+                builder.addArgument(name: "rawValue", value: "\(value)")
+            }
         }
     }
 }

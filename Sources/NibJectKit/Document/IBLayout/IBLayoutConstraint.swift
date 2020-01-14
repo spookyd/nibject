@@ -102,6 +102,8 @@ public struct IBLayoutConstraint {
     }
 
     public var objectID: Nib.ObjectID
+    public var customName: String?
+    public var isPlaceholder: Bool
     public var firstItemID: Nib.ObjectID
     public var firstAnchor: Anchor
     public var secondItemID: Nib.ObjectID?
@@ -128,6 +130,8 @@ private struct NibConstraintParser {
 
     func parse() -> IBLayoutConstraint {
         let objectID = object.objectID
+        let customName = findCustomName()
+        let isPlaceholder = findIsPlaceholder()
         let firstItem = findFirstItem()
         let firstAnchor = findFirstAnchor()
         let secondItem = findSecondItem()
@@ -138,6 +142,8 @@ private struct NibConstraintParser {
         let multiplier = findMultiplier()
 
         return IBLayoutConstraint(objectID: objectID,
+                                  customName: customName,
+                                  isPlaceholder: isPlaceholder,
                                   firstItemID: firstItem,
                                   firstAnchor: firstAnchor,
                                   secondItemID: secondItem,
@@ -146,6 +152,14 @@ private struct NibConstraintParser {
                                   constant: constant,
                                   priority: priority,
                                   multiplier: multiplier)
+    }
+
+    private func findCustomName() -> String? {
+        return object.content["identifier"] as? String
+    }
+
+    private func findIsPlaceholder() -> Bool {
+        return object.content["placeholder"] as? Bool ?? false
     }
 
     private func findFirstItem() -> Nib.ObjectID {
