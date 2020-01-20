@@ -46,17 +46,12 @@ struct LazySubviewPropertyDeclarationMaker {
                     builder.initializingExpression(RawExpression(rawValue: view.uikitRepresentation))
                 })
             }
-            let memberExpression = RawExpression(rawValue: "translatesAutoresizingMaskIntoConstraints")
-            let translatesExpression = ExplicitMemberExpression(expression: RawExpression(rawValue: closurePropName),
-                                                                member: memberExpression)
-            let translatesValue = "\(view.translatesToAutoResizeMask)"
-            let returnValue = ReturnExpression(expression: RawExpression(rawValue: closurePropName))
-            builder.bodyStatements([
-                constant,
-                AssignmentOperatorExpression(expression: translatesExpression,
-                                             value: RawExpression(rawValue: translatesValue)),
-                returnValue
-            ])
+            var body: [StatementRepresentable] = []
+            let viewProperties = PropertyAssignments(propertyName: closurePropName, view: view, isExplicit: false)
+            body.append(constant)
+            body.append(contentsOf: viewProperties.make())
+            body.append(ReturnExpression(expression: RawExpression(rawValue: closurePropName)))
+            builder.bodyStatements(body)
         }
         let executed = InitializerExpression { builder in
             builder.initializingExpression(closure)
