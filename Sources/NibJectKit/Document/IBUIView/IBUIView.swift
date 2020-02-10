@@ -256,6 +256,11 @@ struct IBUIViewParser {
         case "IBUIStackView": return IBUIStackView(label: hierarchy.label, name: name, nibObject: object)
         case "IBUIButton": return IBUIButton(label: hierarchy.label, name: name, nibObject: object)
         case "IBUILabel": return IBUILabel(label: hierarchy.label, name: name, nibObject: object)
+        case "IBUISwitch": return IBUISwitch(label: hierarchy.label, name: name, nibObject: object)
+        case "IBUIProgressView": return IBUIProgressView(label: hierarchy.label, name: name, nibObject: object)
+        case "IBUIStepper": return IBUIStepper(label: hierarchy.label, name: name, nibObject: object)
+        case "IBUIActivityIndicatorView": return IBUIActivityIndicatorView(label: hierarchy.label, name: name, nibObject: object)
+        case "IBUIImageView": return IBUIImageView(label: hierarchy.label, name: name, nibObject: object)
         default: return IBUIView(label: hierarchy.label, name: name, nibObject: object)
         }
     }

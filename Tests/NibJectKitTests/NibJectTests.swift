@@ -81,6 +81,13 @@ final class NibJectTests: XCTestCase {
         let actual = removeMetaCharaters(from: try runNibject(for: fileName))
         XCTAssertEqual(actual, expected)
     }
+    
+    func testContentViewsSupportView() throws {
+        let fileName = "ContentViews"
+        let expected = removeMetaCharaters(from: try loadExpectedOutput(fileName))
+        let actual = removeMetaCharaters(from: try runNibject(for: fileName))
+        XCTAssertEqual(actual, expected)
+    }
 
     // MARK: - Utilities
     private func loadExpectedOutput(_ fileName: String) throws -> String {
