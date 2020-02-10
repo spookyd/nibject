@@ -188,3 +188,129 @@ struct ConstraintFunctionCallExpressionMaker {
     }
 
 }
+
+struct ContentCompressionHuggingStatements {
+    let property: RawExpression
+    let view: IBUIView
+    var isExplicit: Bool
+    init(propertyName: String, view: IBUIView, isExplicit: Bool) {
+        self.property = RawExpression(rawValue: propertyName)
+        self.view = view
+        self.isExplicit = isExplicit
+    }
+    
+    func make() -> [StatementRepresentable] {
+        var statements: [StatementRepresentable] = []
+        if shouldShowHorizontalContentCompressionResistancePriority {
+            let value = view.horizontalContentCompressionResistancePriority
+            let statement = makeSetContentCompressionResistance(.horizontal, value: value)
+            statements.append(statement)
+        }
+        if shouldShowHorizontalContentHuggingPriority {
+            let value = view.horizontalContentHuggingPriority
+            let statement = makeSetContentHugging(.horizontal, value: value)
+            statements.append(statement)
+        }
+        if shouldShowVerticalContentCompressionResistancePriority {
+            let value = view.horizontalContentCompressionResistancePriority
+            let statement = makeSetContentCompressionResistance(.vertical, value: value)
+            statements.append(statement)
+        }
+        if shouldShowVerticalContentHuggingPriority {
+            let value = view.horizontalContentHuggingPriority
+            let statement = makeSetContentHugging(.vertical, value: value)
+            statements.append(statement)
+        }
+        return statements
+    }
+    
+    var shouldShowHorizontalContentCompressionResistancePriority: Bool {
+        isExplicit || !isDefaultHorizontalContentCompressionResistancePriority
+    }
+    
+    var isDefaultHorizontalContentCompressionResistancePriority: Bool {
+        view.horizontalContentCompressionResistancePriority == view.defaultHorizontalContentCompressionResistancePriority
+    }
+    
+    var shouldShowHorizontalContentHuggingPriority: Bool {
+        isExplicit || !isDefaultHorizontalContentHuggingPriority
+    }
+    
+    var isDefaultHorizontalContentHuggingPriority: Bool {
+        view.horizontalContentHuggingPriority == view.defaultHorizontalContentHuggingPriority
+    }
+    
+    var shouldShowVerticalContentCompressionResistancePriority: Bool {
+        isExplicit || !isDefaultVerticalContentCompressionResistancePriority
+    }
+    
+    var isDefaultVerticalContentCompressionResistancePriority: Bool {
+        view.verticalContentCompressionResistancePriority == view.defaultVerticalContentCompressionResistancePriority
+    }
+    
+    var shouldShowVerticalContentHuggingPriority: Bool {
+        isExplicit || !isDefaultVerticalContentHuggingPriority
+    }
+    
+    var isDefaultVerticalContentHuggingPriority: Bool {
+        view.verticalContentHuggingPriority == view.defaultVerticalContentHuggingPriority
+    }
+    
+    private enum Direction {
+        case horizontal
+        case vertical
+        var outputText: String {
+            switch self {
+            case .horizontal: return ".horizontal"
+            case .vertical: return ".vertical"
+            }
+        }
+    }
+    
+    private func makeSetContentCompressionResistance(_ direction: Direction, value: Float) -> ExpressionRepresentable {
+        // view.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
+        let priority = makeLayoutPriority(value)
+        let expression = FunctionCallExpression.init { builder in
+            builder.functionName("setContentCompressionResistancePriority")
+            builder.addArgument(value: priority.outputText)
+            builder.addArgument(name: "for", value: direction.outputText)
+        }
+        return ExplicitMemberExpression(expression: property, member: expression)
+    }
+    
+    private func makeSetContentHugging(_ direction: Direction, value: Float) -> ExpressionRepresentable {
+        // view.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        let priority = makeLayoutPriority(value)
+        let expression = FunctionCallExpression.init { builder in
+            builder.functionName("setContentHuggingPriority")
+            builder.addArgument(value: priority.outputText)
+            builder.addArgument(name: "for", value: direction.outputText)
+        }
+        return ExplicitMemberExpression(expression: property, member: expression)
+    }
+    
+    private func makeLayoutPriority(_ value: Float) -> ExpressionRepresentable {
+        let expression = RawExpression(rawValue: "UILayoutPriority")
+        switch value {
+        case 1000:
+            let member = RawExpression(rawValue: "required")
+            return ExplicitMemberExpression(expression: expression, member: member)
+        case 750:
+            let member = RawExpression(rawValue: "defaultHigh")
+            return ExplicitMemberExpression(expression: expression, member: member)
+        case 250:
+            let member = RawExpression(rawValue: "defaultLow")
+            return ExplicitMemberExpression(expression: expression, member: member)
+        default:
+            return InitializerExpression { builder in
+                builder.initializingExpression(expression)
+                builder.addArgument(name: "rawValue", value: "\(value)")
+            }
+        }
+    }
+    
+    private func makeMemberAssignemnt(member: String, value: String) -> AssignmentOperatorExpression {
+        let explicitMember = ExplicitMemberExpression(expression: property, member: RawExpression(rawValue: member))
+        return AssignmentOperatorExpression(expression: explicitMember, value: RawExpression(rawValue: value))
+    }
+}

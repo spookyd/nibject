@@ -17,6 +17,17 @@ public class AdditionalConstraintHandlingView: UIView {
         return view
     }()
     
+    // ObjectID: gTS-rN-bmZ; Missing Xcode Label
+    private lazy var view1: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.setContentCompressionResistancePriority(UILayoutPriority.required, for: .horizontal)
+        view.setContentHuggingPriority(UILayoutPriority.defaultHigh, for: .horizontal)
+        view.setContentCompressionResistancePriority(UILayoutPriority.required, for: .vertical)
+        view.setContentHuggingPriority(UILayoutPriority.defaultHigh, for: .vertical)
+        return view
+    }()
+    
     public init() {
         super.init(frame: .zero)
         setupSubviews()
@@ -30,8 +41,10 @@ public class AdditionalConstraintHandlingView: UIView {
     
     private func setupSubviews() {
         addSubview(childView)
+        addSubview(view1)
         var constraints: [NSLayoutConstraint] = []
         constraints.append(contentsOf: layoutChildView())
+        constraints.append(contentsOf: layoutView1())
         NSLayoutConstraint.activate(constraints)
     }
     
@@ -42,6 +55,19 @@ public class AdditionalConstraintHandlingView: UIView {
         let trailing = safeAreaLayoutGuide.trailingAnchor.constraint(equalTo: childView.trailingAnchor)
         return [
             customAnchorName,
+            top,
+            trailing
+        ]
+    }
+    
+    private func layoutView1() -> [NSLayoutConstraint] {
+        let top = view1.topAnchor.constraint(equalTo: childView.bottomAnchor, constant: 8.0)
+        let leading = view1.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 20.0)
+        let trailing = safeAreaLayoutGuide.trailingAnchor.constraint(equalTo: view1.trailingAnchor, constant: 20.0)
+        let height = view1.heightAnchor.constraint(equalToConstant: 128.0)
+        return [
+            height,
+            leading,
             top,
             trailing
         ]

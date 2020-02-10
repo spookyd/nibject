@@ -40,6 +40,66 @@ public class IBUIView: CustomStringConvertible {
         }
         return value
     }
+    
+    /**
+     <key>ibShadowedHorizontalContentCompressionResistancePriority</key>
+     <real>750</real>
+     */
+    public var horizontalContentCompressionResistancePriority: Float {
+        guard let value = rawData.content["ibShadowedHorizontalContentCompressionResistancePriority"] as? Float else {
+            return defaultHorizontalContentCompressionResistancePriority
+        }
+        return value
+    }
+    
+    var defaultHorizontalContentCompressionResistancePriority: Float {
+        return 750
+    }
+    
+    /**
+    <key>ibShadowedHorizontalContentHuggingPriority</key>
+    <real>250</real>
+     */
+    public var horizontalContentHuggingPriority: Float {
+        guard let value = rawData.content["ibShadowedHorizontalContentHuggingPriority"] as? Float else {
+            return defaultHorizontalContentHuggingPriority
+        }
+        return value
+    }
+    
+    var defaultHorizontalContentHuggingPriority: Float {
+        return 250
+    }
+    
+    /**
+     <key>ibShadowedVerticalContentCompressionResistancePriority</key>
+     <real>750</real>
+     */
+    public var verticalContentCompressionResistancePriority: Float {
+        guard let value = rawData.content["ibShadowedVerticalContentCompressionResistancePriority"] as? Float else {
+            return defaultVerticalContentCompressionResistancePriority
+        }
+        return value
+    }
+    
+    var defaultVerticalContentCompressionResistancePriority: Float {
+        return 750
+    }
+    
+    /**
+     <key>ibShadowedVerticalContentHuggingPriority</key>
+     <real>250</real>
+     */
+    public var verticalContentHuggingPriority: Float {
+        guard let value = rawData.content["ibShadowedVerticalContentHuggingPriority"] as? Float else {
+            return defaultVerticalContentHuggingPriority
+        }
+        return value
+    }
+    
+    var defaultVerticalContentHuggingPriority: Float {
+        return 250
+    }
 
     // swiftlint:disable:next todo
     // TODO: ibExternalUserDefinedRuntimeAttributes
@@ -195,6 +255,7 @@ struct IBUIViewParser {
         switch object.rawClassValue {
         case "IBUIStackView": return IBUIStackView(label: hierarchy.label, name: name, nibObject: object)
         case "IBUIButton": return IBUIButton(label: hierarchy.label, name: name, nibObject: object)
+        case "IBUILabel": return IBUILabel(label: hierarchy.label, name: name, nibObject: object)
         default: return IBUIView(label: hierarchy.label, name: name, nibObject: object)
         }
     }

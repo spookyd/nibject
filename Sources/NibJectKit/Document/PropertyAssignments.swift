@@ -36,6 +36,11 @@ struct PropertyAssignments {
     private func makeAssignments() -> [StatementRepresentable] {
         var statements: [StatementRepresentable] = []
         statements.append(makeTranslatesAutoresizingMaskAssignment())
+        // Add additional properties
+        let constraintStatements = ContentCompressionHuggingStatements(propertyName: property.outputText,
+                                                                       view: view,
+                                                                       isExplicit: isExplicit)
+        statements.append(contentsOf: constraintStatements.make())
         return statements
     }
     
